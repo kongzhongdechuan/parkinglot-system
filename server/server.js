@@ -17,10 +17,12 @@ var multer = require('multer')
 
 app.use(express.static('public'))
 
+//进入127.0.0.1:8888首先触发的操作
 app.get('/', function (req, res) {
   res.sendFile('html/index.html', { root: 'public' });
 })
 
+//貌似没什么用,应该是之前的功能，但是被/upload_picture给替代了
 app.get('/car_enter', function (req, res) {
   console.log("car_enter");
   const newPagePath = __dirname + '/public' + '/html/index.html';
@@ -35,9 +37,23 @@ app.get('/car_enter', function (req, res) {
   });
 })
 
+//调试用变量
 var time = 1;
 
+//获取坐标路径，传给前端显示
 app.get('/get_coordinates', function (req, res) {
+
+  //!!!!!!!!!!!!!!!!!!这里需要调用mySql来获取车位信息
+
+
+
+
+
+
+
+
+
+
 
   const startX = 2;
   const startY = 0;
@@ -80,6 +96,19 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
     console.log("time:",time);
     time = time+1;
     console.log("/uploat_picture Car Number:", car_number);
+
+
+
+
+
+
+
+
+
+
+    
+    //这里可以添加一些获取数据库信息比对的结果
+    //插入数据库操作，车号、停车场车位、时间
     res.json({ carNumber: car_number });
   } catch (error) {
     console.error(error);
