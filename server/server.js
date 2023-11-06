@@ -10,6 +10,7 @@ var path = require('path')
 var getCarNumberMoudl = require('./getCarNumber')
 var multer = require('multer')
 
+var sql = require('./getMysql')
 
 
 
@@ -22,7 +23,7 @@ app.get('/', function (req, res) {
   res.sendFile('html/index.html', { root: 'public' });
 })
 
-//貌似没什么用,应该是之前的功能，但是被/upload_picture给替代了
+//被upload_picture给替代了
 app.get('/car_enter', function (req, res) {
   console.log("car_enter");
   const newPagePath = __dirname + '/public' + '/html/index.html';
@@ -96,8 +97,17 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
     console.log("time:",time);
     time = time+1;
     console.log("/uploat_picture Car Number:", car_number);
+    
 
 
+    //查看mysql运行结果
+    
+    console.log(sql.selectcars(car_number));
+    console.log(sql.selectpark());
+    console.log(sql.updatepark(0,0,1));
+    console.log(sql.insertcarpark(car_number,0,0));
+    console.log(sql.selectcarpark(car_number));
+    console.log(sql.deletecarpark(car_number));
 
 
 
