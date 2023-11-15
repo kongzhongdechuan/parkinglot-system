@@ -11,7 +11,24 @@ function Init() {
     }
 }
 
+function findRoadByPark(endX)
+{
+    //靠近车位的路要向下寻找
+    if(endX % 5 == 0)
+        endX = endX+2;
+    else 
+        endX = endX-1;
+    return endX;
+}
+
+
+//对于车位，一个车位通过两个坐标表示。但是使用的时候仅仅使用上面的坐标
 function getCoordinates(startX, startY, endX, endY) {
+
+    //找到靠近车库的路块坐标
+    endX = findRoadByPark(endX);
+    console.log("The road near the parkinglot is : ",endX,endY);
+
     Init();
     const visited = new Array(25).fill(0).map(() => new Array(31).fill(false));
 

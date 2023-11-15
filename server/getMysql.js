@@ -46,11 +46,11 @@ function selectpark() {
         connection.query(sql, function (error, result) {
             if (error) {
                 console.log('[selectpark error] - ', error.message);
-                return;
-
+                reject(error);
+            } else {
+                console.log('[selectpark result] :', result);
+                resolve(result[0]); // 将第一行作为Promise的解决值返回
             }
-            console.log('[selectpark result] :', result);
-            return result;
         });
     });
 }

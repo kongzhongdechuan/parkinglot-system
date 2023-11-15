@@ -44,36 +44,36 @@ var time = 1;
 //获取坐标路径，传给前端显示
 app.get('/get_coordinates', async function (req, res) {
 
-  //!!!!!!!!!!!!!!!!!!这里需要调用mySql来获取车位信息
-  try{
+  try {
     const park = await sql.selectpark();
-    console.log("park is :",park[0]);
+    console.log("park is :", park);
+    
+    const park_x = park.park_X;
+    const park_y = park.park_Y;
+
+    sql.updatepark(park_x,park_y,1);
+
+    //(2,0)->(24,27)
+    const startX = 12;
+    const startY = 0;
+    const endX = park_x;
+    const endY = park_y;
+
+    console.log("endx : ",endX," endy : ",endY);
+
+    
+
+    // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
+    const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
+    console.log("get_coordinates ", time);
+    time = time + 1;
+
+    res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
   }
-  catch(error)
-  {
+  catch (error) {
     console.error(error);
+    res.status(500).send('Get Park Server Error');
   }
-
-
-
-
-
-
-
-
-
-//(2,0)->(24,27)
-  const startX = 2;
-  const startY = 0;
-  const endX = 24;
-  const endY = 27;
-
-  // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
-  const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
-  console.log("get_coordinates ",time);
-  time = time+1;
-
-  res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
 });
 
 
@@ -101,10 +101,10 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
     });*/
   try {
     var car_number = await getCarNumberMoudl.getCarNumber();
-    console.log("time:",time);
-    time = time+1;
+    console.log("time:", time);
+    time = time + 1;
     console.log("/uploat_picture Car Number:", car_number);
-    
+
 
 
     //查看mysql运行结果
@@ -123,7 +123,7 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
 
 
 
-    
+
     //这里可以添加一些获取数据库信息比对的结果
     //插入数据库操作，车号、停车场车位、时间
     res.json({ carNumber: car_number });
