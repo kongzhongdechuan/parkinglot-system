@@ -185,6 +185,12 @@
                     console.error('Failed to fetch data:', error);
                     dataDisplay.textContent = 'Failed to fetch car number';
                 });
+
+
+            //车辆驶出
+
+            //在驶出的时候要回送多个信息，仿照/get_coordinate进行编写
+            fetch('/car_exit');
         });
     </script>
 
