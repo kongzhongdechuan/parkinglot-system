@@ -42,9 +42,17 @@ app.get('/car_enter', function (req, res) {
 var time = 1;
 
 //获取坐标路径，传给前端显示
-app.get('/get_coordinates', function (req, res) {
+app.get('/get_coordinates', async function (req, res) {
 
   //!!!!!!!!!!!!!!!!!!这里需要调用mySql来获取车位信息
+  try{
+    const park = await sql.selectpark();
+    console.log("park is :",park[0]);
+  }
+  catch(error)
+  {
+    console.error(error);
+  }
 
 
 
@@ -54,8 +62,7 @@ app.get('/get_coordinates', function (req, res) {
 
 
 
-
-
+//(2,0)->(24,27)
   const startX = 2;
   const startY = 0;
   const endX = 24;
@@ -101,14 +108,14 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
 
 
     //查看mysql运行结果
-    
+    /*
     console.log(sql.selectcars(car_number));
     console.log(sql.selectpark());
     console.log(sql.updatepark(0,0,1));
     console.log(sql.insertcarpark(car_number,0,0));
     console.log(sql.selectcarpark(car_number));
     console.log(sql.deletecarpark(car_number));
-
+    */
 
 
 
