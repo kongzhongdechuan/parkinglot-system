@@ -16,7 +16,7 @@ function parkcost(enterTime)
     
     var MinCost = 0;
     if(exitMinute-enterMinute >= 1)
-        MinCost = (exitMinute-enterMinute)*10;
+        MinCost = (exitMinute-enterMinute)*30;
 
     var SecondCost = (exitSecond-enterSecond)*0.5;
     return MinCost+SecondCost;
