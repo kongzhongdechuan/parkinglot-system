@@ -171,7 +171,7 @@
 
             const formData = new FormData();
             formData.append('car-image', document.getElementById('image-input').files[0]);
-            fetch('/upload_picture', {
+            /*fetch('/upload_picture', {
                 method: 'POST',
                 body: formData
             })
@@ -185,10 +185,23 @@
                     console.error('Failed to fetch data:', error);
                     dataDisplay.textContent = 'Failed to fetch car number';
                 });
-            
+            */
 
             //车辆驶出
-
+            fetch('/car_exit', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 获取后端发送的数据，并将其显示在<p>元素中
+                    var data = `感谢您的光临！ 尊贵的 ${data.carNumber} 的车主。您的车费为: ${data.parkCost} 元!`
+                    dataDisplay.textContent = data;
+                })
+                .catch(error => {
+                    console.error('Failed to fetch data:', error);
+                    dataDisplay.textContent = 'Failed to fetch car number';
+                });   
 
         });
     </script>

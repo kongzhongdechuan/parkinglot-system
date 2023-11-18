@@ -48,7 +48,7 @@ function selectpark() {
                 console.log('[selectpark error] - ', error.message);
                 reject(error);
             } else {
-                console.log('[selectpark result] :', result);
+                console.log('[selectpark result] :', result[0]);
                 resolve(result[0]); // 将第一行作为Promise的解决值返回
             }
         });
@@ -69,15 +69,29 @@ function updatepark(park_X, park_Y, value) {
 }
 
 //对carpark数据进行操作： 查询、增加、删除
-function selectcarpark(carNumber) {
+/*function selectcarpark(carNumber) {
     var sql = 'select * from carpark where carNumber = ?';
     connection.query(sql, carNumber, function (error, result) {
         if (error) {
-            console.log('[selectcarpar error] - ', error.message);
+            console.log('[selectcarpark error] - ', error.message);
             return;
         }
         console.log('[selectcarpar] : ', result);
         return result;
+    });
+}*/
+function selectcarpark(carNumber) {
+    return new Promise((resolve, reject) => {
+        var sql = 'select * from carpark where carNumber = ?';
+        connection.query(sql, carNumber, function (error, result) {
+            if (error) {
+                console.log('[selectcarpark error] - ', error.message);
+                reject(error);
+            } else {
+                console.log('[selectcarpark result] :', result);
+                resolve(result[0]); // 将第一行作为Promise的解决值返回
+            }
+        });
     });
 }
 

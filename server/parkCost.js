@@ -5,6 +5,7 @@ function parkcost(enterTime)
     var enterSecond = enterTime.getSeconds();
 
     var exitTime = new Date();
+    console.log("exitTime : ",exitTime);
     var exitHour = exitTime.getHours();
     var exitMinute = exitTime.getMinutes();
     var exitSecond = exitTime.getSeconds();
@@ -13,8 +14,9 @@ function parkcost(enterTime)
     if(exitHour-enterHour >= 1)
         return 100;
     
+    var MinCost = 0;
     if(exitMinute-enterMinute >= 1)
-        var MinCost = (exitMinute-enterMinute)*10;
+        MinCost = (exitMinute-enterMinute)*10;
 
     var SecondCost = (exitSecond-enterSecond)*0.5;
     return MinCost+SecondCost;
