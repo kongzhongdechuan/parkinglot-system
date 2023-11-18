@@ -12,6 +12,8 @@ var multer = require('multer')
 
 var sql = require('./getMysql')
 
+var cost = require('./parkCost');
+
 
 
 //定义全局变量
@@ -86,18 +88,15 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
     console.log(sql.deletecarpark(car_number));
     */
 
-
-
-
-
-
-
+  
+    res.json({ carNumber: car_number, coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
 
     //这里可以添加一些获取数据库信息比对的结果
     //插入数据库操作，车号、停车场车位、时间
     //res.json({ carNumber: car_number });
     //添加响应
-    res.json({ carNumber: car_number, coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
+    
+    
 
   } catch (error) {
     console.error(error);
@@ -105,6 +104,66 @@ app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
   }
 });
 
+
+app.post('/car_exit', upload.single('car-image'), async (req, res) => {
+  // 调用getCarNumber.js处理图片
+  /*getCarNumberMoudl.getCarNumber()
+    .then(carNumber => {
+      res.json({ carNumber });
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to recognize car number' });
+    });*/
+  try {
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    app.locals.car_name = car_number; // 设置全局变量
+    console.log("time:", time);
+    time = time + 1;
+    console.log("/uploat_picture Car Number:", car_number);
+
+
+
+    //查看mysql运行结果
+    /*
+    console.log(sql.selectcars(car_number));
+    console.log(sql.selectpark());
+    console.log(sql.updatepark(0,0,1));
+    console.log(sql.insertcarpark(car_number,0,0));
+    console.log(sql.selectcarpark(car_number));
+    console.log(sql.deletecarpark(car_number));
+    */
+
+    const selectCarparkResult = await sql.selectcarpark(car_number);
+    console.log("selectCarparkResult : ",selectCarparkResult);
+    const park_x = selectCarparkResult.park_X;
+    const park_y = selectCarparkResult.park_Y;
+    const parkTime = selectCarparkResult.enterTime;
+
+    sql.deletecarpark(car_number);
+    sql.updatepark(park_x,park_y,0);
+
+    const parkCost = cost.parkcost(parkTime);
+
+    if(selectCarparkResult !== null && selectCarparkResult !== undefined) 
+    {
+      res.json({ carNumber: car_number,parkCost : parkCost,coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
+    }
+    else
+    res.json({ carNumber: car_number, coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
+
+    //这里可以添加一些获取数据库信息比对的结果
+    //插入数据库操作，车号、停车场车位、时间
+    //res.json({ carNumber: car_number });
+    //添加响应
+    
+    
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to recognize car number' });
+  }
+});
 
 
 //获取坐标路径，传给前端显示
@@ -119,7 +178,7 @@ app.get('/get_coordinates', async function (req, res) {
 
     const car_number = app.locals.car_name;
     console.log("car_number : ", car_number);
-
+    //选择可以选择的车位
     const park = await sql.selectpark();
     console.log("park is :", park);
 
@@ -138,6 +197,7 @@ app.get('/get_coordinates', async function (req, res) {
 
     //对carpark进行添加
     await sql.insertcarpark(car_number, endX, endY);
+
 
 
 

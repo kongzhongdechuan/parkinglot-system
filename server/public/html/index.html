@@ -178,19 +178,18 @@
                 .then(response => response.json())
                 .then(data => {
                     // 获取后端发送的数据，并将其显示在<p>元素中
-                    var data = `感谢您的光临！ 尊贵的 ${data.carNumber} 的车主。您的车费为: xxxx元!`
+                    var data = `感谢您的光临！ 尊贵的 ${data.carNumber} 的车主。您的车费为: ${data.parkCost} 元!`
                     dataDisplay.textContent = data;
                 })
                 .catch(error => {
                     console.error('Failed to fetch data:', error);
                     dataDisplay.textContent = 'Failed to fetch car number';
                 });
-
+            
 
             //车辆驶出
 
-            //在驶出的时候要回送多个信息，仿照/get_coordinate进行编写
-            fetch('/car_exit');
+
         });
     </script>
 
