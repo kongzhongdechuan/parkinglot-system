@@ -11,47 +11,49 @@ function Init() {
     }
 }
 
-function findRoadByPark(endX)
-{
-    //靠近车位的路要向下寻找
-    if(endX % 5 == 0)
-        endX = endX+2;
-    else 
-        endX = endX-1;
+function findRoadByPark(endX) {
+    if (endX % 5 == 0)
+        endX = endX + 2;
+    else
+        endX = endX - 1;
     return endX;
 }
 
-
-//对于车位，一个车位通过两个坐标表示。但是使用的时候仅仅使用上面的坐标
 function getCoordinates(startX, startY, endX, endY) {
-
-    //找到靠近车库的路块坐标
     endX = findRoadByPark(endX);
-    console.log("The road near the parkinglot is : ",endX,endY);
+    console.log("The road near the parkinglot is : ", endX, endY);
 
     Init();
+    const distance = new Array(25).fill(0).map(() => new Array(31).fill(Number.MAX_VALUE));
     const visited = new Array(25).fill(0).map(() => new Array(31).fill(false));
-
     const from = new Array(25).fill(0).map(() => new Array(31).fill([-1, -1]));
     const dir = [[0, 1], [0, -1], [1, 0], [-1, 0]];
 
-    function BFS(map, visited, x, y, targetx, targety) {
-        const queue = [];
-        queue.push([x, y]);
-        visited[x][y] = true;
+    function Dijkstra(map, distance, visited, from, x, y, targetx, targety) {
+        distance[x][y] = 0;
 
-        while (queue.length > 0) {
-            const frontPoint = queue.shift();
-            const [curx, cury] = frontPoint;
+        for (let k = 0; k < 25 * 31; k++) {
+            let minDist = Number.MAX_VALUE;
+            let curx = -1;
+            let cury = -1;
+
+            for (let i = 0; i < 25; i++) {
+                for (let j = 0; j < 31; j++) {
+                    if (!visited[i][j] && distance[i][j] < minDist) {
+                        minDist = distance[i][j];
+                        curx = i;
+                        cury = j;
+                    }
+                }
+            }
+
+            if (curx === -1 || cury === -1) break;
+
+            visited[curx][cury] = true;
 
             for (let i = 0; i < 4; i++) {
                 const nextx = curx + dir[i][0];
                 const nexty = cury + dir[i][1];
-
-                if (nextx === targetx && nexty === targety) {
-                    from[targetx][targety] = [curx, cury];
-                    return;
-                }
 
                 if (
                     nextx < 0 ||
@@ -62,33 +64,19 @@ function getCoordinates(startX, startY, endX, endY) {
                     continue;
                 }
 
-                if (!visited[nextx][nexty] && map[nextx][nexty] === 0) {
-                    visited[nextx][nexty] = true;
-                    queue.push([nextx, nexty]);
+                if (distance[nextx][nexty] > distance[curx][cury] + 1 && map[nextx][nexty] === 0) {
+                    distance[nextx][nexty] = distance[curx][cury] + 1;
                     from[nextx][nexty] = [curx, cury];
                 }
             }
         }
     }
 
-    BFS(map, visited, startX, startY, endX, endY);
+    Dijkstra(map, distance, visited, from, startX, startY, endX, endY);
     const path = getPath(from, endX, endY);
 
-    //console.log("path:",path);
-
-    const corrdinate = pathChangeToJson(path);
-    //console.log("corrdinate:",corrdinate);
-    return corrdinate;
-
-
-    const newCoordinates = [
-        { x1: 150, y1: 150, x2: 350, y2: 150 },
-        { x1: 250, y1: 250, x2: 450, y2: 250 },
-        // 添加更多坐标对象
-    ];
-
-    console.log("newcordinate:",newCoordinates);
-    //return newCoordinates;
+    const coordinate = pathChangeToJson(path);
+    return coordinate;
 }
 
 function getPath(from, targetx, targety) {
@@ -106,37 +94,35 @@ function getPath(from, targetx, targety) {
     while (stack.length > 0) {
         path.push(stack.pop());
     }
-    
+
     console.log("path: " + path);
     return path;
 }
 
-
-//转化的时候考虑街道是两格
 function changex(x) {
-    var num = x/4;
+    var num = x / 4;
     return (x + num + 1.5) * (1100 / 40);
 }
+
 function changey(y) {
     var num = 0;
-    if(y <= 2)
+    if (y <= 2)
         num = 0;
-    else if(y <= 7)
+    else if (y <= 7)
         num = 1;
-    else if(y <= 12)
+    else if (y <= 12)
         num = 2;
-    else if(y <= 17)
+    else if (y <= 17)
         num = 3;
-    else if(y <= 22)
+    else if (y <= 22)
         num = 4;
-    else if(y <= 27)
+    else if (y <= 27)
         num = 5;
-    else if(y <= 32)
+    else if (y <= 32)
         num = 6;
     return (y + num + 1.5) * (520 / 32);
 }
 
-//javaScirpt与cpp的x和y坐标刚好对调一下
 function pathChangeToJson(path) {
     const newCoordinates = [];
     for (let i = 0; i < path.length - 1; i++) {
@@ -149,7 +135,6 @@ function pathChangeToJson(path) {
     }
     return newCoordinates;
 }
-
 
 module.exports = {
     getCoordinates,

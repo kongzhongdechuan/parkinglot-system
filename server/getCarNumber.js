@@ -9,7 +9,7 @@ const requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
 const accessToken = '24.78c87bf506eaeb0ebd8b202f32360c3c.2592000.1700646689.282335-41606987';
 
 async function getCarNumber() {
-  try {
+  /*try {
     const image = fs.readFileSync(imageFilePath, { encoding: 'base64' });
 
     const params = {
@@ -36,7 +36,6 @@ async function getCarNumber() {
     const response = await axios.post(fullUrl, queryString, { headers });
 
     const json_data = response.data;
-
     if (json_data && json_data.words_result && json_data.words_result.number) {
       return json_data.words_result.number;
     } else {
@@ -44,7 +43,9 @@ async function getCarNumber() {
     }
   } catch (error) {
     throw error;
-  }
+  }*/
+
+  return '京A8888'
 }
 
 module.exports = {
