@@ -141,6 +141,17 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 });
 
 
+app.get('/show_alreadyParking',async function(req,res) {
+  try{
+    const parkUsing = sql.selectparkUsing();
+    const transformparkUsing = getParkUsing(parkUsing);
+    res.json(transformparkUsing);
+  }catch(error){
+    console.error(error);
+    res.status(500).send('show_alreadyParking Server Error');
+  }
+});
+
 //获取坐标路径，传给前端显示
 app.get('/get_coordinates', async function (req, res) {
 

@@ -129,6 +129,7 @@
                     }
                 })
                 .then(coordinates => {
+                    //显示图片
                     const myImg = new Image();
                     myImg.src = 'images/parking.jpg';
 
@@ -153,8 +154,15 @@
                     console.error('错误:', error);
                 });
 
+
+
+
+
         });
+
+        //点击动作
         exitButton.addEventListener('click', function () {
+            //显示图片
             const myImg = new Image();
             myImg.src = 'images/parking.jpg';
 
@@ -201,7 +209,43 @@
                 .catch(error => {
                     console.error('Failed to fetch data:', error);
                     dataDisplay.textContent = 'Failed to fetch car number';
-                });   
+                });
+
+
+            //展示已经停车的车位
+            fetch('/show_alreadyParking')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('获取坐标请求失败');
+                    }
+                })
+                .then(coordinates => {
+                    //显示图片
+                    const myImg = new Image();
+                    myImg.src = 'images/parking.jpg';
+
+                    var canvas = document.getElementById('drawing-canvas');
+                    var context = canvas.getContext('2d');
+                    context.strokeStyle = 'red';
+                    context.lineWidth = 7;
+
+                    myImg.onload = function () {
+                        console.log(this);
+                        context.drawImage(this, 0, 0);
+
+                        coordinates.forEach(coordinate => {
+                            context.beginPath();
+                            context.moveTo(coordinate.x1, coordinate.y1);
+                            context.lineTo(coordinate.x2, coordinate.y2);
+                            context.stroke();
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                });
 
         });
     </script>

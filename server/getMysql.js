@@ -55,6 +55,19 @@ function selectpark() {
     });
 }
 
+function selectparkUsing() {
+    var sql = 'select * from parkinglot where isUsing = 1';
+    connection.query(sql,function(error,result){
+        if(error) {
+            console.log('[selectparkUsing error] - ',error.message);
+            reject(error);
+        } else {
+            // console.log('[selectparkUsing result]: ',result[0]);
+            resolve(result);
+        }
+    })
+}
+
 function updatepark(park_X, park_Y, value) {
     var sql = 'update parkinglot set isUsing = ? where park_X = ? and park_Y = ?';
     var modSqlParams = [value, park_X, park_Y];
@@ -124,6 +137,7 @@ function deletecarpark(carNumber) {
 module.exports = {
     selectcars: selectcars,
     selectpark: selectpark,
+    selectparkUsing : selectparkUsing,
     updatepark: updatepark,
     selectcarpark: selectcarpark,
     deletecarpark: deletecarpark,
