@@ -1,7 +1,7 @@
 
 function changex(x) {
     var num = x / 4;
-    return (x + num + 1.5) * (1100 / 40);
+    return (x + num + 1.33) * (1100 / 40);
 }
 
 function changey(y) {
@@ -28,11 +28,11 @@ function getParkUsing(inputArray)
     const resultArray = [];
     for(let i = 0; i < inputArray.length; i++) {
         resultArray.push({
-            x1:changex(inputArray[i].park_X),
-            y1:changey(inputArray[i].park_Y),
-            x2:changex(inputArray[i].park_X+1),
-            y2:changey(inputArray[i],park_Y)
-        })
+            x1:changex(inputArray[i].park_Y),
+            y1:changey(inputArray[i].park_X),
+            x2:changex(inputArray[i].park_Y),
+            y2:changey(inputArray[i].park_X+1)
+        });
     }
     return resultArray;
 }

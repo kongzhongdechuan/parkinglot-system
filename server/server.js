@@ -14,6 +14,7 @@ var sql = require('./getMysql')
 
 var cost = require('./parkCost');
 
+var Usingpark = require('./getParkUsing');
 
 
 //定义全局变量
@@ -143,8 +144,8 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 
 app.get('/show_alreadyParking',async function(req,res) {
   try{
-    const parkUsing = sql.selectparkUsing();
-    const transformparkUsing = getParkUsing(parkUsing);
+    const parkUsing = await sql.selectparkUsing();
+    const transformparkUsing = Usingpark.getParkUsing(parkUsing);
     res.json(transformparkUsing);
   }catch(error){
     console.error(error);

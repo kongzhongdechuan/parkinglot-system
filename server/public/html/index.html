@@ -234,7 +234,7 @@
                     myImg.onload = function () {
                         console.log(this);
                         context.drawImage(this, 0, 0);
-
+                        context.strokeStyle = 'brown';
                         coordinates.forEach(coordinate => {
                             context.beginPath();
                             context.moveTo(coordinate.x1, coordinate.y1);
