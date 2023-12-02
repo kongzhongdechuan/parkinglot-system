@@ -39,6 +39,10 @@
                         console.log(this);
                         context.drawImage(this, 0, 0);
                     }
+
+                    // 将图片对象保存在全局变量中
+                    window.myImg = myImg;
+                    window.context = context;
                 </script>
 
 
@@ -95,9 +99,15 @@
         const exitButton = document.getElementById('exit-button');
         enterButton.addEventListener('click', function () {
 
+            /*
             const formData = new FormData();
             formData.append('car-image', document.getElementById('image-input').files[0]);
+            */
 
+
+            const myImg = window.myImg;
+            const context = window.context;
+            context.strokeStyle = 'red';
             //上传图片
             fetch('/upload_picture', {
                 method: 'POST',
@@ -130,9 +140,10 @@
                 })
                 .then(coordinates => {
                     //显示图片
+                    /*
                     const myImg = new Image();
                     myImg.src = 'images/parking.jpg';
-
+                    
                     var canvas = document.getElementById('drawing-canvas');
                     var context = canvas.getContext('2d');
                     context.strokeStyle = 'red';
@@ -148,7 +159,13 @@
                             context.lineTo(coordinate.x2, coordinate.y2);
                             context.stroke();
                         });
-                    }
+                    }*/
+                    coordinates.forEach(coordinate => {
+                        context.beginPath();
+                        context.moveTo(coordinate.x1, coordinate.y1);
+                        context.lineTo(coordinate.x2, coordinate.y2);
+                        context.stroke();
+                    });
                 })
                 .catch(error => {
                     console.error('错误:', error);
@@ -163,6 +180,7 @@
         //点击动作
         exitButton.addEventListener('click', function () {
             //显示图片
+            /*
             const myImg = new Image();
             myImg.src = 'images/parking.jpg';
 
@@ -174,7 +192,12 @@
                 console.log(this);
                 context.drawImage(this, 0, 0);
             }
+            */
 
+            //获取img和context
+            const myImg = window.myImg;
+            const context = window.context;
+            context.strokeStyle = 'red';
 
 
             const formData = new FormData();
@@ -223,7 +246,7 @@
                 })
                 .then(coordinates => {
                     //显示图片
-                    const myImg = new Image();
+                    /*const myImg = new Image();
                     myImg.src = 'images/parking.jpg';
 
                     var canvas = document.getElementById('drawing-canvas');
@@ -241,7 +264,14 @@
                             context.lineTo(coordinate.x2, coordinate.y2);
                             context.stroke();
                         });
-                    }
+                    }*/
+                    context.strokeStyle = 'brown';
+                    coordinates.forEach(coordinate => {
+                        context.beginPath();
+                        context.moveTo(coordinate.x1, coordinate.y1);
+                        context.lineTo(coordinate.x2, coordinate.y2);
+                        context.stroke();
+                    });
                 })
                 .catch(error => {
                     console.error('错误:', error);
