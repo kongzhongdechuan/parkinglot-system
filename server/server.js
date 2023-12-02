@@ -29,7 +29,7 @@ app.get('/', function (req, res) {
   res.sendFile('html/index.html', { root: 'public' });
 })
 
-//被upload_picture给替代了
+//被car_enter给替代了
 app.get('/car_enter', function (req, res) {
   console.log("car_enter");
   const newPagePath = __dirname + '/public' + '/html/index.html';
@@ -60,7 +60,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 // 处理上传的图片
-app.post('/upload_picture', upload.single('car-image'), async (req, res) => {
+app.post('/car_enter', upload.single('car-image'), async (req, res) => {
   // 调用getCarNumber.js处理图片
   /*getCarNumberMoudl.getCarNumber()
     .then(carNumber => {
