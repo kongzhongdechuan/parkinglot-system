@@ -106,6 +106,13 @@
             const myImg = window.myImg;
             const context = window.context;
             context.strokeStyle = 'red';
+
+            // 清空画布
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制图片
+            context.drawImage(myImg, 0, 0);
+
             //上传图片
             fetch('/car_enter', {
                 method: 'POST',
@@ -127,6 +134,30 @@
                 });
 
 
+            //展示已经停车的车位
+            fetch('/show_alreadyParking')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('获取坐标请求失败');
+                    }
+                })
+                .then(coordinates => {
+                    context.strokeStyle = 'brown';
+                    coordinates.forEach(coordinate => {
+                        context.beginPath();
+                        context.moveTo(coordinate.x1, coordinate.y1);
+                        context.lineTo(coordinate.x2, coordinate.y2);
+                        context.stroke();
+                    });
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                });
+
+
+
             //获取路径坐标
             fetch('/get_coordinates')
                 .then(response => {
@@ -139,6 +170,7 @@
                 .then(coordinates => {
                     //显示图片
                     coordinates.forEach(coordinate => {
+                        context.strokeStyle = 'red';
                         context.beginPath();
                         context.moveTo(coordinate.x1, coordinate.y1);
                         context.lineTo(coordinate.x2, coordinate.y2);
@@ -162,7 +194,12 @@
             //获取img和context
             const myImg = window.myImg;
             const context = window.context;
-            context.strokeStyle = 'red';
+
+            // 清空画布
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制图片
+            context.drawImage(myImg, 0, 0);
 
 
             const formData = new FormData();
