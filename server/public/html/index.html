@@ -224,7 +224,9 @@
 
 
             //展示已经停车的车位
-            fetch('/show_alreadyParking')
+            fetch('/car_exit_Database',{
+                method:'POST'
+            })
                 .then(response => {
                     if (response.ok) {
                         return response.json();

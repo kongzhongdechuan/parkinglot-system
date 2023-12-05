@@ -30,19 +30,19 @@ app.get('/', function (req, res) {
 })
 
 //被car_enter给替代了
-app.get('/car_enter', function (req, res) {
-  console.log("car_enter");
-  const newPagePath = __dirname + '/public' + '/html/index.html';
+// app.get('/car_enter', function (req, res) {
+//   console.log("car_enter");
+//   const newPagePath = __dirname + '/public' + '/html/index.html';
 
-  fs.readFile(newPagePath, 'utf8', function (err, data) {
-    if (err) {
-      console.error('Error reading new_page.html', err);
-      res.status(500).send('Internal Server Error');
-    } else {
-      res.send(data);
-    }
-  });
-})
+//   fs.readFile(newPagePath, 'utf8', function (err, data) {
+//     if (err) {
+//       console.error('Error reading new_page.html', err);
+//       res.status(500).send('Internal Server Error');
+//     } else {
+//       res.send(data);
+//     }
+//   });
+// })
 
 //调试用变量
 var time = 1;
@@ -62,43 +62,13 @@ const upload = multer({ storage });
 // 处理上传的图片
 app.post('/car_enter', upload.single('car-image'), async (req, res) => {
   // 调用getCarNumber.js处理图片
-  /*getCarNumberMoudl.getCarNumber()
-    .then(carNumber => {
-      res.json({ carNumber });
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to recognize car number' });
-    });*/
   try {
     const car_number = await getCarNumberMoudl.getCarNumber();
     app.locals.car_name = car_number; // 设置全局变量
     console.log("time:", time);
     time = time + 1;
     console.log("/uploat_picture Car Number:", car_number);
-
-
-
-    //查看mysql运行结果
-    /*
-    console.log(sql.selectcars(car_number));
-    console.log(sql.selectpark());
-    console.log(sql.updatepark(0,0,1));
-    console.log(sql.insertcarpark(car_number,0,0));
-    console.log(sql.selectcarpark(car_number));
-    console.log(sql.deletecarpark(car_number));
-    */
-
-
     res.json({ carNumber: car_number, coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
-
-    //这里可以添加一些获取数据库信息比对的结果
-    //插入数据库操作，车号、停车场车位、时间
-    //res.json({ carNumber: car_number });
-    //添加响应
-
-
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to recognize car number' });
@@ -106,6 +76,7 @@ app.post('/car_enter', upload.single('car-image'), async (req, res) => {
 });
 
 
+//车辆退出，返回车牌和车费
 app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 
   try {
@@ -122,13 +93,9 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
       const park_x = selectCarparkResult.park_X;
       const park_y = selectCarparkResult.park_Y;
       const parkTime = selectCarparkResult.enterTime;
-      console.log("car_exit  , park_x : ",park_x," park_y : ",park_y," parkTime : ",parkTime);
-
-      await sql.deletecarpark(car_number);
-      await sql.updatepark(park_x, park_y, 0);
-
+      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
       const parkCost = cost.parkcost(parkTime);
-      console.log("car_exit  ,parkCost : ",parkCost);
+      console.log("car_exit  ,parkCost : ", parkCost);
 
       res.json({ carNumber: car_number, parkCost: parkCost });
     } else {
@@ -141,13 +108,52 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
   }
 });
 
+app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
 
-app.get('/show_alreadyParking',async function(req,res) {
-  try{
+  try {
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    app.locals.car_name = car_number; // 设置全局变量
+    console.log("time:", time);
+    time = time + 1;
+    console.log("/car_exit Car Number:", car_number);
+
+    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
+    const selectCarparkResult = await sql.selectcarpark(car_number);
+    console.log("selectCarparkResult : ", selectCarparkResult);
+    if (selectCarparkResult) {
+      const park_x = selectCarparkResult.park_X;
+      const park_y = selectCarparkResult.park_Y;
+      const parkTime = selectCarparkResult.enterTime;
+      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
+
+      sql.deletecarpark(car_number);
+      sql.updatepark(park_x, park_y, 0);
+
+      //返回车位占用情况
+      const parkUsing = await sql.selectparkUsing();
+      const transformparkUsing = Usingpark.getParkUsing(parkUsing);
+      console.log('执行car_exit_Database')
+      res.json(transformparkUsing);
+
+    } else {
+      res.status(404).json({ error: '停车场中未找到该车辆' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to recognize car number' });
+  }
+});
+
+
+
+
+app.get('/show_alreadyParking', async function (req, res) {
+  try {
     const parkUsing = await sql.selectparkUsing();
     const transformparkUsing = Usingpark.getParkUsing(parkUsing);
     res.json(transformparkUsing);
-  }catch(error){
+  } catch (error) {
     console.error(error);
     res.status(500).send('show_alreadyParking Server Error');
   }
