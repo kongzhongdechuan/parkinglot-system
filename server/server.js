@@ -29,20 +29,17 @@ app.get('/', function (req, res) {
   res.sendFile('html/index.html', { root: 'public' });
 })
 
-//被car_enter给替代了
-// app.get('/car_enter', function (req, res) {
-//   console.log("car_enter");
-//   const newPagePath = __dirname + '/public' + '/html/index.html';
+app.get('/show_alreadyParking', async function (req, res) {
+  try {
+    const parkUsing = await sql.selectparkUsing();
+    const transformparkUsing = Usingpark.getParkUsing(parkUsing);
+    res.json(transformparkUsing);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('show_alreadyParking Server Error');
+  }
+});
 
-//   fs.readFile(newPagePath, 'utf8', function (err, data) {
-//     if (err) {
-//       console.error('Error reading new_page.html', err);
-//       res.status(500).send('Internal Server Error');
-//     } else {
-//       res.send(data);
-//     }
-//   });
-// })
 
 //调试用变量
 var time = 1;
@@ -68,7 +65,7 @@ app.post('/car_enter', upload.single('car-image'), async (req, res) => {
     console.log("time:", time);
     time = time + 1;
     console.log("/uploat_picture Car Number:", car_number);
-    res.json({ carNumber: car_number, coordinatesUrl: `/get_coordinates?car_number=${car_number}` });
+    res.json({ carNumber: car_number});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to recognize car number' });
@@ -99,7 +96,8 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 
       res.json({ carNumber: car_number, parkCost: parkCost });
     } else {
-      res.status(404).json({ error: '停车场中未找到该车辆' });
+      res.json({ carNumber: car_number, parkCost: 0 });
+      // res.status(404).json({ error: '停车场中未找到该车辆' });
     }
 
   } catch (error) {
@@ -148,28 +146,19 @@ app.post('/car_exit_Database', upload.single('car-image'), async function (req, 
 
 
 
-app.get('/show_alreadyParking', async function (req, res) {
-  try {
-    const parkUsing = await sql.selectparkUsing();
-    const transformparkUsing = Usingpark.getParkUsing(parkUsing);
-    res.json(transformparkUsing);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('show_alreadyParking Server Error');
-  }
-});
+
 
 //获取坐标路径，传给前端显示
-app.get('/get_coordinates', async function (req, res) {
+app.get('/get_coordinates',upload.single('car-image'),async function (req, res) {
 
   try {
 
     // 通过请求参数获取 car_number,等待car_number赋值之后才进行操作
-    while (!app.locals.car_name) {
-      await new Promise(resolve => setTimeout(resolve, 100)); // 等待100毫秒
-    }
+    // while (!app.locals.car_name) {
+    //   await new Promise(resolve => setTimeout(resolve, 100)); // 等待100毫秒
+    // }
 
-    const car_number = app.locals.car_name;
+    const car_number = await getCarNumberMoudl.getCarNumber();
     console.log("car_number : ", car_number);
     //选择可以选择的车位
     const park = await sql.selectpark();
@@ -189,7 +178,7 @@ app.get('/get_coordinates', async function (req, res) {
     console.log("endx : ", endX, " endy : ", endY);
 
     //对carpark进行添加
-    await sql.insertcarpark(car_number, endX, endY);
+    sql.insertcarpark(car_number, endX, endY);
 
 
 

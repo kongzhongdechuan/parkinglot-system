@@ -76,6 +76,43 @@
 
     </div>
 
+    
+    <script>
+        //页面初始化的操作
+        window.onload = function () {
+            // 发起 AJAX 请求，从后端获取数据
+
+            console.log('window初始化执行'); // 确保 context 变量在这里是可用的
+
+            fetch('/show_alreadyParking',{
+                method:'GET'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('获取坐标请求失败');
+                    }
+                })
+                .then(coordinates => {
+                    context.strokeStyle = 'brown';
+                    coordinates.forEach(coordinate => {
+                        context.beginPath();
+                        context.moveTo(coordinate.x1, coordinate.y1);
+                        context.lineTo(coordinate.x2, coordinate.y2);
+                        context.stroke();
+                    });
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                });
+        };
+    </script>
+    
+
+
+
+
 
     <script>
         // 获取页面元素
