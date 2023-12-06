@@ -197,7 +197,9 @@
 
 
             //获取路径坐标
-            fetch('/get_coordinates')
+            fetch('/get_coordinates',{
+                method : 'POST'
+            })
                 .then(response => {
                     if (response.ok) {
                         return response.json();

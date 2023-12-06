@@ -64,92 +64,16 @@ app.post('/car_enter', upload.single('car-image'), async (req, res) => {
     app.locals.car_name = car_number; // 设置全局变量
     console.log("time:", time);
     time = time + 1;
-    console.log("/uploat_picture Car Number:", car_number);
+    console.log("/car_enter Car Number:", car_number);
     res.json({ carNumber: car_number});
   } catch (error) {
-    console.error(error);
+    console.error('car_enter:'+error);
     res.status(500).json({ error: 'Failed to recognize car number' });
   }
 });
-
-
-//车辆退出，返回车牌和车费
-app.post('/car_exit', upload.single('car-image'), async function (req, res) {
-
-  try {
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    app.locals.car_name = car_number; // 设置全局变量
-    console.log("time:", time);
-    time = time + 1;
-    console.log("/car_exit Car Number:", car_number);
-
-    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
-    const selectCarparkResult = await sql.selectcarpark(car_number);
-    console.log("selectCarparkResult : ", selectCarparkResult);
-    if (selectCarparkResult) {
-      const park_x = selectCarparkResult.park_X;
-      const park_y = selectCarparkResult.park_Y;
-      const parkTime = selectCarparkResult.enterTime;
-      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
-      const parkCost = cost.parkcost(parkTime);
-      console.log("car_exit  ,parkCost : ", parkCost);
-
-      res.json({ carNumber: car_number, parkCost: parkCost });
-    } else {
-      res.json({ carNumber: car_number, parkCost: 0 });
-      // res.status(404).json({ error: '停车场中未找到该车辆' });
-    }
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to recognize car number' });
-  }
-});
-
-app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
-
-  try {
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    app.locals.car_name = car_number; // 设置全局变量
-    console.log("time:", time);
-    time = time + 1;
-    console.log("/car_exit Car Number:", car_number);
-
-    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
-    const selectCarparkResult = await sql.selectcarpark(car_number);
-    console.log("selectCarparkResult : ", selectCarparkResult);
-    if (selectCarparkResult) {
-      const park_x = selectCarparkResult.park_X;
-      const park_y = selectCarparkResult.park_Y;
-      const parkTime = selectCarparkResult.enterTime;
-      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
-
-      sql.deletecarpark(car_number);
-      sql.updatepark(park_x, park_y, 0);
-
-      //返回车位占用情况
-      const parkUsing = await sql.selectparkUsing();
-      const transformparkUsing = Usingpark.getParkUsing(parkUsing);
-      console.log('执行car_exit_Database')
-      res.json(transformparkUsing);
-
-    } else {
-      res.status(404).json({ error: '停车场中未找到该车辆' });
-    }
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to recognize car number' });
-  }
-});
-
-
-
-
-
 
 //获取坐标路径，传给前端显示
-app.get('/get_coordinates',upload.single('car-image'),async function (req, res) {
+app.post('/get_coordinates',upload.single('car-image'),async function (req, res) {
 
   try {
 
@@ -195,6 +119,85 @@ app.get('/get_coordinates',upload.single('car-image'),async function (req, res) 
     res.status(500).send('Get Park Server Error');
   }
 });
+
+
+
+//车辆退出，返回车牌和车费
+app.post('/car_exit', upload.single('car-image'), async function (req, res) {
+
+  try {
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    app.locals.car_name = car_number; // 设置全局变量
+    console.log("time:", time);
+    time = time + 1;
+    console.log("/car_exit Car Number:", car_number);
+
+    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
+    const selectCarparkResult = await sql.selectcarpark(car_number);
+    console.log("selectCarparkResult : ", selectCarparkResult);
+    if (selectCarparkResult) {
+      const park_x = selectCarparkResult.park_X;
+      const park_y = selectCarparkResult.park_Y;
+      const parkTime = selectCarparkResult.enterTime;
+      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
+      const parkCost = cost.parkcost(parkTime);
+      console.log("car_exit  ,parkCost : ", parkCost);
+
+      res.json({ carNumber: car_number, parkCost: parkCost });
+    } else {
+      res.json({ carNumber: car_number, parkCost: 0 });
+      // res.status(404).json({ error: '停车场中未找到该车辆' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to recognize car number' });
+  }
+});
+
+app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
+
+  try {
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    app.locals.car_name = car_number; // 设置全局变量
+    console.log("time:", time);
+    time = time + 1;
+    console.log("/car_exit_Database Car Number:", car_number);
+
+    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
+    const selectCarparkResult = await sql.selectcarpark(car_number);
+    console.log("selectCarparkResult : ", selectCarparkResult);
+    if (selectCarparkResult) {
+      const park_x = selectCarparkResult.park_X;
+      const park_y = selectCarparkResult.park_Y;
+      const parkTime = selectCarparkResult.enterTime;
+      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
+
+      sql.deletecarpark(car_number);
+      sql.updatepark(park_x, park_y, 0);
+
+      //返回车位占用情况
+      const parkUsing = await sql.selectparkUsing();
+      const transformparkUsing = Usingpark.getParkUsing(parkUsing);
+      console.log('执行car_exit_Database')
+      res.json(transformparkUsing);
+
+    } else {
+      res.status(404).json({ error: '停车场中未找到该车辆' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to recognize car number' });
+  }
+});
+
+
+
+
+
+
+
 
 
 
