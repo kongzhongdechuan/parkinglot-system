@@ -59,24 +59,38 @@ const upload = multer({ storage });
 
 
 // 处理上传的图片,返回车牌号
-app.post('/car_enter', upload.single('car-image'), async (req, res) => {
-  // 调用getCarNumber.js处理图片
+// 处理上传的图片,返回车牌号
+app.post('/car_enter', async (req, res) => {
+  // 调用 getCarNumber.js 处理图片
   try {
-    
     console.log("time:", time);
     time = time + 1;
     console.log("car_enter start -----------------------------------------------------------");
 
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    //app.locals.car_name = car_number; // 设置全局变量
-    console.log("/car_enter Car Number:", car_number);
-    res.json({ carNumber: car_number});
-    console.log("car_enter end ------------------------------------------------------------");
+    // 使用 await 保证 upload.single 执行完成
+    upload.single('car-image')(req, res, async function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('文件上传错误');
+      }
+
+      try {
+        // 获取车牌号
+        const car_number = await getCarNumberMoudl.getCarNumber();
+        console.log("/car_enter 车牌号:", car_number);
+        res.json({ carNumber: car_number });
+        console.log("car_enter 结束 ------------------------------------------------------------");
+      } catch (error) {
+        console.error('car_enter 错误:' + error);
+        res.status(500).json({ error: '无法识别车牌号' });
+      }
+    });
   } catch (error) {
-    console.error('car_enter:'+error);
-    res.status(500).json({ error: 'Failed to recognize car number' });
+    console.error(error);
+    res.status(500).send('车辆进入服务器错误');
   }
 });
+
 
 
 // 获取坐标路径，传给前端显示
@@ -92,7 +106,7 @@ app.post('/get_coordinates', async function (req, res) {
 
     // 通过 upload.single('car-image') 中间件处理文件上传
     //和car_enter直接在第一行使用一样，之前一直以为是这里的问题，其实不是
-    upload.single('car-image')(req, res, async function (err) {
+    await upload.single('car-image')(req, res, async function (err) {
       if (err) {
         console.error(err);
         return res.status(500).send('File upload error');
@@ -143,94 +157,99 @@ app.post('/get_coordinates', async function (req, res) {
 
 
 
-//车辆退出，返回车牌和车费
-app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 
+// 车辆退出，返回车牌和车费
+app.post('/car_exit', function (req, res) {
   try {
-
     console.log("time:", time);
     time = time + 1;
     console.log("car_exit start -----------------------------------------------------------");
 
+    // 使用 upload.single 中间件，传递回调函数处理文件上传
+    upload.single('car-image')(req, res, async function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('文件上传错误');
+      }
 
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    //app.locals.car_name = car_number; // 设置全局变量
-    
-    console.log("/car_exit Car Number:", car_number);
+      try {
+        const car_number = await getCarNumberMoudl.getCarNumber();
+        const selectCarparkResult = await sql.selectcarpark(car_number);
 
-    //console.log("sql.selectpark :", await sql.selectcarpark(car_number));
-    const selectCarparkResult = await sql.selectcarpark(car_number);
-    //console.log("selectCarparkResult : ", selectCarparkResult);
-    if (selectCarparkResult) {
-      const park_x = selectCarparkResult.park_X;
-      const park_y = selectCarparkResult.park_Y;
-      const parkTime = selectCarparkResult.enterTime;
-      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
-      const parkCost = cost.parkcost(parkTime);
-      console.log("car_exit  ,parkCost : ", parkCost);
+        if (selectCarparkResult) {
+          const park_x = selectCarparkResult.park_X;
+          const park_y = selectCarparkResult.park_Y;
+          const parkTime = selectCarparkResult.enterTime;
+          console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
+          const parkCost = cost.parkcost(parkTime);
+          console.log("car_exit  ,parkCost : ", parkCost);
 
-      res.json({ carNumber: car_number, parkCost: parkCost });
-    } else {
-      res.json({ carNumber: car_number, parkCost: 0 });
-      // res.status(404).json({ error: '停车场中未找到该车辆' });
-    }
+          res.json({ carNumber: car_number, parkCost: parkCost });
+        } else {
+          res.json({ carNumber: car_number, parkCost: 0 });
+        }
 
-    console.log("car_exit end --------------------------------------------------------------------");
+        console.log("car_exit end --------------------------------------------------------------------");
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to recognize car number' });
+      }
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to recognize car number' });
+    res.status(500).json({ error: 'Failed to process car exit' });
   }
 });
 
-//获取车牌号，根据车牌号删除数据库内容。返回车位信息
-app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
 
+/// 获取车牌号，根据车牌号删除数据库内容。返回车位信息
+app.post('/car_exit_Database', function (req, res) {
   try {
-
     console.log("time:", time);
     time = time + 1;
     console.log("car_exit_Datebase start --------------------------------------------------");
 
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    //app.locals.car_name = car_number; // 设置全局变量
-    
-    console.log("/car_exit_Database Car Number:", car_number);
+    // 使用 upload.single 中间件，传递回调函数处理文件上传
+    upload.single('car-image')(req, res, async function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('文件上传错误');
+      }
 
-    //console.log("sql.selectpark :", await sql.selectcarpark(car_number));
-    const selectCarparkResult = await sql.selectcarpark(car_number);
-    //console.log("selectCarparkResult : ", selectCarparkResult);
-    if (selectCarparkResult) {
-      const park_x = selectCarparkResult.park_X;
-      const park_y = selectCarparkResult.park_Y;
-      const parkTime = selectCarparkResult.enterTime;
-      console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
+      try {
+        const car_number = await getCarNumberMoudl.getCarNumber();
+        const selectCarparkResult = await sql.selectcarpark(car_number);
 
+        if (selectCarparkResult) {
+          const park_x = selectCarparkResult.park_X;
+          const park_y = selectCarparkResult.park_Y;
+          const parkTime = selectCarparkResult.enterTime;
+          console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
 
-      console.log("car_exit_Database 操作SQl语句--------");
-      await sql.deletecarpark(car_number);
-      await sql.updatepark(park_x, park_y, 0);
+          console.log("car_exit_Database 操作SQl语句--------");
+          await sql.deletecarpark(car_number);
+          await sql.updatepark(park_x, park_y, 0);
+        }
 
-    } /*else {
-      res.status(404).json({ error: '停车场中未找到该车辆' });
-    }*/   //注释掉停车场未找到该车辆信息
+        console.log('car_exit_Database : 车位占用情况');
+        
+        // 返回车位占用情况
+        const parkUsing = await sql.selectparkUsing();
+        const transformparkUsing = Usingpark.getParkUsing(parkUsing);
+        console.log('执行car_exit_Database');
+        res.json(transformparkUsing);
 
-    console.log('car_exit_Database : 车位占用情况');
-
-    //返回车位占用情况
-    const parkUsing = await sql.selectparkUsing();
-    const transformparkUsing = Usingpark.getParkUsing(parkUsing);
-    console.log('执行car_exit_Database')
-    res.json(transformparkUsing);
-
-
-    console.log("car_exit_Database end ---------------------------------------------");
-
+        console.log("car_exit_Database end ---------------------------------------------");
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to recognize car number' });
+      }
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to recognize car number' });
+    res.status(500).json({ error: 'Failed to process car exit database' });
   }
 });
-
 
 
 
