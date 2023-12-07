@@ -111,7 +111,7 @@ app.post('/get_coordinates', async function (req, res) {
         const park_y = park.park_Y;
 
         // 车位状态信息改变
-        sql.updatepark(park_x, park_y, 1);
+        await sql.updatepark(park_x, park_y, 1);
 
         // (2,0)->(24,27)
         const startX = 12;
@@ -122,7 +122,7 @@ app.post('/get_coordinates', async function (req, res) {
         console.log("endx : ", endX, " endy : ", endY);
 
         // 对carpark进行添加
-        sql.insertcarpark(car_number, endX, endY);
+        await sql.insertcarpark(car_number, endX, endY);
 
         // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
         const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
@@ -207,8 +207,8 @@ app.post('/car_exit_Database', upload.single('car-image'), async function (req, 
 
 
       console.log("car_exit_Database 操作SQl语句--------");
-      sql.deletecarpark(car_number);
-      sql.updatepark(park_x, park_y, 0);
+      await sql.deletecarpark(car_number);
+      await sql.updatepark(park_x, park_y, 0);
 
     } /*else {
       res.status(404).json({ error: '停车场中未找到该车辆' });
