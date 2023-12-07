@@ -28,7 +28,7 @@ app.use(express.static('public'))
 app.get('/', function (req, res) {
   res.sendFile('html/index.html', { root: 'public' });
 })
-
+//车辆进入的时候展示车位信息
 app.get('/show_alreadyParking', async function (req, res) {
   try {
     const parkUsing = await sql.selectparkUsing();
@@ -56,7 +56,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-// 处理上传的图片
+
+
+// 处理上传的图片,返回车牌号
 app.post('/car_enter', upload.single('car-image'), async (req, res) => {
   // 调用getCarNumber.js处理图片
   try {
@@ -155,6 +157,7 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
   }
 });
 
+//获取车牌号，根据车牌号删除数据库内容。返回车位信息
 app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
 
   try {
@@ -176,15 +179,17 @@ app.post('/car_exit_Database', upload.single('car-image'), async function (req, 
       sql.deletecarpark(car_number);
       sql.updatepark(park_x, park_y, 0);
 
-      //返回车位占用情况
-      const parkUsing = await sql.selectparkUsing();
-      const transformparkUsing = Usingpark.getParkUsing(parkUsing);
-      console.log('执行car_exit_Database')
-      res.json(transformparkUsing);
-
-    } else {
+    } /*else {
       res.status(404).json({ error: '停车场中未找到该车辆' });
-    }
+    }*/   //注释掉停车场未找到该车辆信息
+
+    console.log('car_exit_Database : 车位占用情况');
+
+    //返回车位占用情况
+    const parkUsing = await sql.selectparkUsing();
+    const transformparkUsing = Usingpark.getParkUsing(parkUsing);
+    console.log('执行car_exit_Database')
+    res.json(transformparkUsing);
 
   } catch (error) {
     console.error(error);

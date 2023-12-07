@@ -151,7 +151,7 @@
             // 绘制图片
             context.drawImage(myImg, 0, 0);
 
-            //上传图片
+            //上传图片,获取车牌号
             fetch('/car_enter', {
                 method: 'POST',
                 body: formData
@@ -196,7 +196,7 @@
 
 
 
-            //获取路径坐标
+            //获取路径坐标,展示路径
             fetch('/get_coordinates',{
                 method : 'POST'
             })
@@ -221,10 +221,6 @@
                     console.error('错误:', error);
                 });
 
-
-
-
-
         });
 
         //点击动作
@@ -245,7 +241,7 @@
             const formData = new FormData();
             formData.append('car-image', document.getElementById('image-input').files[0]);
 
-            //车辆驶出
+            //车辆驶出,获取车牌号和车费
             fetch('/car_exit', {
                 method: 'POST',
                 body: formData

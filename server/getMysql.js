@@ -10,18 +10,6 @@ var connection = mysql.createConnection(
 );
 connection.connect();
 
-/*
-var sql = 'select * from vipcars';
-
-connection.query(sql,function(error,result){
-    if(error){
-        console.log('[select error] - ',error.message);
-        return;
-    }
-    console.log(result);
-});*/
-
-
 //对vipcars数据库操作：查询
 function selectcars(carNumber) {
     var sql = 'select * from vipcars where carNumber = ?';
@@ -84,17 +72,6 @@ function updatepark(park_X, park_Y, value) {
 }
 
 //对carpark数据进行操作： 查询、增加、删除
-/*function selectcarpark(carNumber) {
-    var sql = 'select * from carpark where carNumber = ?';
-    connection.query(sql, carNumber, function (error, result) {
-        if (error) {
-            console.log('[selectcarpark error] - ', error.message);
-            return;
-        }
-        console.log('[selectcarpar] : ', result);
-        return result;
-    });
-}*/
 function selectcarpark(carNumber) {
     return new Promise((resolve, reject) => {
         var sql = 'select * from carpark where carNumber = ?';
