@@ -198,7 +198,8 @@
 
             //获取路径坐标,展示路径
             fetch('/get_coordinates',{
-                method : 'POST'
+                method : 'POST',
+                body : formData
             })
                 .then(response => {
                     if (response.ok) {
@@ -260,7 +261,8 @@
 
             //展示已经停车的车位
             fetch('/car_exit_Database',{
-                method:'POST'
+                method:'POST',
+                body : formData
             })
                 .then(response => {
                     if (response.ok) {

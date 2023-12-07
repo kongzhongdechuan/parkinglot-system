@@ -78,57 +78,68 @@ app.post('/car_enter', upload.single('car-image'), async (req, res) => {
   }
 });
 
-//获取坐标路径，传给前端显示
-app.post('/get_coordinates',upload.single('car-image'),async function (req, res) {
 
+// 获取坐标路径，传给前端显示
+app.post('/get_coordinates', async function (req, res) {
   try {
 
-    // 通过请求参数获取 car_number,等待car_number赋值之后才进行操作
-    // while (!app.locals.car_name) {
-    //   await new Promise(resolve => setTimeout(resolve, 100)); // 等待100毫秒
-    // }
 
-    console.log("time:",time);
+    console.log('time:',time);
     time = time+1;
-    console.log("get_coordinates start ---------------------------------------------------");
-
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    console.log("get_coordinates car_number : ", car_number);
-    //选择可以选择的车位
-    const park = await sql.selectpark();
-    console.log("park is :", park);
-
-    const park_x = park.park_X;
-    const park_y = park.park_Y;
-
-    //车位状态信息改变
-    sql.updatepark(park_x, park_y, 1);
-
-    //(2,0)->(24,27)
-    const startX = 12;
-    const startY = 0;
-    const endX = park_x;
-    const endY = park_y;
-
-    console.log("endx : ", endX, " endy : ", endY);
-
-    //对carpark进行添加
-    sql.insertcarpark(car_number, endX, endY);
+    console.log("get_coordinate start -------------------------------------------------------");
 
 
 
+    // 通过 upload.single('car-image') 中间件处理文件上传
+    //和car_enter直接在第一行使用一样，之前一直以为是这里的问题，其实不是
+    upload.single('car-image')(req, res, async function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('File upload error');
+      }
 
-    // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
-    const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
-    res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
+      try {
+        // 获取车牌号
+        const car_number = await getCarNumberMoudl.getCarNumber();
+        console.log("get_coordinates car_number : ", car_number);
 
-    console.log("get_coordinates end --------------------------------------------------------");
-  }
-  catch (error) {
+        // 选择可以选择的车位
+        const park = await sql.selectpark();
+        console.log("park is :", park);
+
+        const park_x = park.park_X;
+        const park_y = park.park_Y;
+
+        // 车位状态信息改变
+        sql.updatepark(park_x, park_y, 1);
+
+        // (2,0)->(24,27)
+        const startX = 12;
+        const startY = 0;
+        const endX = park_x;
+        const endY = park_y;
+
+        console.log("endx : ", endX, " endy : ", endY);
+
+        // 对carpark进行添加
+        sql.insertcarpark(car_number, endX, endY);
+
+        // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
+        const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
+        res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
+
+        console.log("get_coordinates end --------------------------------------------------------");
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Get Park Server Error');
+      }
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).send('Get Park Server Error');
   }
 });
+
 
 
 
