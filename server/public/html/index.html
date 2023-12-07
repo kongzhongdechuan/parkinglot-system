@@ -8,284 +8,316 @@
 </head>
 
 <body>
-
-    <div id="container" style="width: 1370px;">
-        <div id="header" style="background-color:#80f7f3;">
-            <h1 style="margin-bottom:0;text-align: center;">车位检测系统</h1>
-        </div>
-
-        <div id="content" style="background-color:#97dbee;height:600px;width:1100px;float:left;">
-            <div style="background-color: #5f818b;height: 80px;overflow: hidden;">
-                <!--在style中加入overflow：hidden,否则会移动div-->
-                <!--<h2> 信息显示区域</h2>-->
-                <p id="data_display_area"></p>
-
-            </div>
-
-            <div style="height: 520px;">
-                <!--<img id="parking-lot" src="D:\\桌面\\小毕设\\具体实现\\前端\\image\\parking.jpg">-->
-                <canvas id="drawing-canvas" width="1100px" height="520px" background-color="#FF0000">
-                    浏览器不支持HTML5 canvas 标签
-                </canvas>
-                <script>
-
-                    const myImg = new Image();
-                    myImg.src = 'images/parking.jpg';
-
-                    var canvas = document.getElementById('drawing-canvas');
-                    var context = canvas.getContext('2d');
-                    context.strokeStyle = 'red';
-                    context.lineWidth = 7;
-                    myImg.onload = function () {
-                        console.log(this);
-                        context.drawImage(this, 0, 0);
-                    }
-
-                    // 将图片对象保存在全局变量中
-                    window.myImg = myImg;
-                    window.context = context;
-                </script>
-
-
-
-            </div>
-        </div>
-
-
-        <div id="menu" style="background-color:#5afaba;text-align:center;height:600px;width:270px;float:left;">
-            <div style="height: 40px;">
-                <div style="height: 10px;"></div>
-                <b>菜单</b>
-            </div>
-            <div style="height: 380px;">
-
-                <form id="submit_form" method="post" enctype="multipart/form-data">
-                    <input type="file" id="image-input" name="car-image" accept="image/*"><br>
-                    <!---<input type="submit" value="upload Picture" float="left">--->
-                    <!--图片的默认大小为高度为:195像素,宽度为:260像素。使用之前先用python修改一下-->
-                    <img id="image-preview" src="">
-
-                </form>
-
-            </div>
-            <button id="enter-button" style="height: 50px;width: 200px;">车辆进入</button><br>
-            <div style="height: 40px;"></div>
-            <button id="exit-button" style="height: 50px;width: 200px;">车辆驶出</button><br>
-        </div>
-
-
+<div id="container" style="width: 1370px;">
+    <div id="header" style="background-color:#80f7f3;">
+        <h1 style="margin-bottom:0;text-align: center;">车位检测系统</h1>
     </div>
 
-    
-    <script>
-        //页面初始化的操作
-        window.onload = function () {
-            // 发起 AJAX 请求，从后端获取数据
+    <div id="content" style="background-color:#97dbee;height:600px;width:1100px;float:left;">
+        <div style="background-color: #5f818b;height: 80px;overflow: hidden;">
+            <!--在style中加入overflow：hidden,否则会移动div-->
+            <!--<h2> 信息显示区域</h2>-->
+            <p id="data_display_area"></p>
 
-            console.log('window初始化执行'); // 确保 context 变量在这里是可用的
+        </div>
 
-            fetch('/show_alreadyParking',{
-                method:'GET'
+        <div style="height: 520px;">
+            <!--<img id="parking-lot" src="D:\\桌面\\小毕设\\具体实现\\前端\\image\\parking.jpg">-->
+            <canvas id="drawing-canvas" width="1100px" height="520px" background-color="#FF0000">
+                浏览器不支持HTML5 canvas 标签
+            </canvas>
+            <script>
+
+                const myImg = new Image();
+                myImg.src = 'images/parking.jpg';
+
+                var canvas = document.getElementById('drawing-canvas');
+                var context = canvas.getContext('2d');
+                context.strokeStyle = 'red';
+                context.lineWidth = 7;
+                myImg.onload = function () {
+                    console.log(this);
+                    context.drawImage(this, 0, 0);
+                }
+
+                // 将图片对象保存在全局变量中
+                window.myImg = myImg;
+                window.context = context;
+            </script>
+
+
+
+        </div>
+    </div>
+
+
+    <div id="menu" style="background-color:#5afaba;text-align:center;height:600px;width:270px;float:left;">
+        <div style="height: 40px;">
+            <div style="height: 10px;"></div>
+            <b>菜单</b>
+        </div>
+        <div style="height: 380px;">
+
+            <form id="submit_form" method="post" enctype="multipart/form-data">
+                <input type="file" id="image-input" name="car-image" accept="image/*"><br>
+                <!---<input type="submit" value="upload Picture" float="left">--->
+                <!--图片的默认大小为高度为:195像素,宽度为:260像素。使用之前先用python修改一下-->
+                <img id="image-preview" src="">
+
+            </form>
+
+        </div>
+        <button id="enter-button" style="height: 50px;width: 200px;">车辆进入</button><br>
+        <div style="height: 40px;"></div>
+        <button id="exit-button" style="height: 50px;width: 200px;">车辆驶出</button><br>
+    </div>
+
+
+</div>
+
+
+<script>
+    //页面初始化的操作
+    window.onload = function () {
+        // 发起 AJAX 请求，从后端获取数据
+
+        console.log('window初始化执行'); // 确保 context 变量在这里是可用的
+
+        fetch('/show_alreadyParking', {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('获取坐标请求失败');
+                }
             })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('获取坐标请求失败');
-                    }
-                })
-                .then(coordinates => {
-                    context.strokeStyle = 'brown';
-                    coordinates.forEach(coordinate => {
-                        context.beginPath();
-                        context.moveTo(coordinate.x1, coordinate.y1);
-                        context.lineTo(coordinate.x2, coordinate.y2);
-                        context.stroke();
-                    });
-                })
-                .catch(error => {
-                    console.error('错误:', error);
+            .then(coordinates => {
+                context.strokeStyle = 'brown';
+                coordinates.forEach(coordinate => {
+                    context.beginPath();
+                    context.moveTo(coordinate.x1, coordinate.y1);
+                    context.lineTo(coordinate.x2, coordinate.y2);
+                    context.stroke();
                 });
-        };
-    </script>
-    
+            })
+            .catch(error => {
+                console.error('错误:', error);
+            });
+    };
+
+
+    //车辆进入的一些函数操作——————————————————————————————————————————————————————————————————
+    //车辆进入，显示车牌
+    function car_enter_Func(formData) {
+        return fetch('/car_enter', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                var carNumber = data.carNumber;
+                var p = document.createElement('p');
+                p.textContent = `欢迎您！ 尊贵的 ${carNumber} 的车主。我已为您规划好车位，车位路线如下！`;
+                dataDisplay.innerHTML = '';
+                dataDisplay.appendChild(p);
+                return formData;
+            })
+            .catch(error => {
+                console.error('获取数据失败:', error);
+                dataDisplay.textContent = '获取车牌号失败';
+                throw error;
+            });
+    }
+
+    //展示车位信息
+    function show_alreadyParking_Func(formData) {
+        return fetch('/show_alreadyParking')
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('获取坐标请求失败');
+                }
+            })
+            .then(coordinates => {
+                context.strokeStyle = 'brown';
+                coordinates.forEach(coordinate => {
+                    context.beginPath();
+                    context.moveTo(coordinate.x1, coordinate.y1);
+                    context.lineTo(coordinate.x2, coordinate.y2);
+                    context.stroke();
+                });
+                return formData;
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                throw error;
+            });
+    }
+
+    //展示路径信息
+    function get_coordinates_Func(formData) {
+        return fetch('/get_coordinates', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('获取坐标请求失败');
+                }
+            })
+            .then(coordinates => {
+                coordinates.forEach(coordinate => {
+                    context.strokeStyle = 'red';
+                    context.beginPath();
+                    context.moveTo(coordinate.x1, coordinate.y1);
+                    context.lineTo(coordinate.x2, coordinate.y2);
+                    context.stroke();
+                });
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                throw error;
+            });
+    }
 
 
 
+    //车辆驶出的一些操作————————————————————————————————————————————————————————
+    // 车辆驶出，获取车牌号和车费
+function car_exit_Func(formData) {
+    return fetch('/car_exit', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            var dataMsg = `感谢您的光临！ 尊贵的 ${data.carNumber} 的车主。您的车费为: ${data.parkCost} 元!`
+            dataDisplay.textContent = dataMsg;
+            return formData; // 将formData传递给下一个函数
+        })
+        .catch(error => {
+            console.error('Failed to fetch data:', error);
+            dataDisplay.textContent = 'Failed to fetch car number';
+            throw error;
+        });
+}
 
-
-    <script>
-        // 获取页面元素
-        const imageInput = document.getElementById('image-input');
-        const processImageBtn = document.getElementById('process-image');
-        const imagePreview = document.getElementById('image-preview');
-        const outputImage = document.getElementById('output-image');
-
-        // 监听图片上传事件
-        imageInput.addEventListener('change', function () {
-            const file = imageInput.files[0];
-            if (file) {
-                const imageUrl = URL.createObjectURL(file);
-                imagePreview.src = imageUrl;
+// 展示已经停车的车位
+function show_exitParking_Func(formData) {
+    return fetch('/car_exit_Database', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('获取坐标请求失败');
             }
+        })
+        .then(coordinates => {
+            context.strokeStyle = 'brown';
+            coordinates.forEach(coordinate => {
+                context.beginPath();
+                context.moveTo(coordinate.x1, coordinate.y1);
+                context.lineTo(coordinate.x2, coordinate.y2);
+                context.stroke();
+            });
+        })
+        .catch(error => {
+            console.error('错误:', error);
+            throw error;
+        });
+}
+
+</script>
+
+
+
+
+
+
+<script>
+    // 获取页面元素
+    const imageInput = document.getElementById('image-input');
+    const processImageBtn = document.getElementById('process-image');
+    const imagePreview = document.getElementById('image-preview');
+    const outputImage = document.getElementById('output-image');
+
+    // 监听图片上传事件
+    imageInput.addEventListener('change', function () {
+        const file = imageInput.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            imagePreview.src = imageUrl;
+        }
+    });
+
+
+    const enterButton = document.getElementById('enter-button');
+    const form = document.querySelector('#submit_form');
+    const dataDisplay = document.getElementById('data_display_area');
+    const exitButton = document.getElementById('exit-button');
+    enterButton.addEventListener('click', function () {
+
+        const formData = new FormData();
+        formData.append('car-image', document.getElementById('image-input').files[0]);
+
+
+        const myImg = window.myImg;
+        const context = window.context;
+        context.strokeStyle = 'red';
+
+        // 清空画布
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制图片
+        context.drawImage(myImg, 0, 0);
+
+
+        car_enter_Func(formData)
+                .then(show_alreadyParking_Func)
+                .then(get_coordinates_Func)
+                .catch(error => {
+                    console.error('处理错误:', error);
+                });
+
+
+    });
+
+    //点击动作
+    exitButton.addEventListener('click', function () {
+        //显示图片
+
+        //获取img和context
+        const myImg = window.myImg;
+        const context = window.context;
+
+        // 清空画布
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制图片
+        context.drawImage(myImg, 0, 0);
+
+
+        const formData = new FormData();
+        formData.append('car-image', document.getElementById('image-input').files[0]);
+
+        car_exit_Func(formData)
+        .then(show_exitParking_Func)
+        .catch(error => {
+            console.error('处理错误:', error);
         });
 
-
-        const enterButton = document.getElementById('enter-button');
-        const form = document.querySelector('#submit_form');
-        const dataDisplay = document.getElementById('data_display_area');
-        const exitButton = document.getElementById('exit-button');
-        enterButton.addEventListener('click', function () {
-
-            const formData = new FormData();
-            formData.append('car-image', document.getElementById('image-input').files[0]);
+    });
+</script>
 
 
-            const myImg = window.myImg;
-            const context = window.context;
-            context.strokeStyle = 'red';
-
-            // 清空画布
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 绘制图片
-            context.drawImage(myImg, 0, 0);
-
-            //上传图片,获取车牌号
-            fetch('/car_enter', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-
-                    //console.log('Received data from the server:', data); 
-                    var carNumber = data.carNumber;
-                    var p = document.createElement('p');
-                    p.textContent = `欢迎您！ 尊贵的 ${carNumber} 的车主。我已为您规划好车位，车位路线如下！`;
-                    dataDisplay.innerHTML = ''; // 清空显示区域
-                    dataDisplay.appendChild(p); // 添加新的 <p> 元素
-                })
-                .catch(error => {
-                    console.error('Failed to fetch data:', error);
-                    dataDisplay.textContent = 'Failed to fetch car number';
-                });
-
-
-            //展示已经停车的车位
-            fetch('/show_alreadyParking')
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('获取坐标请求失败');
-                    }
-                })
-                .then(coordinates => {
-                    context.strokeStyle = 'brown';
-                    coordinates.forEach(coordinate => {
-                        context.beginPath();
-                        context.moveTo(coordinate.x1, coordinate.y1);
-                        context.lineTo(coordinate.x2, coordinate.y2);
-                        context.stroke();
-                    });
-                })
-                .catch(error => {
-                    console.error('错误:', error);
-                });
-
-
-
-            //获取路径坐标,展示路径
-            fetch('/get_coordinates',{
-                method : 'POST',
-                body : formData
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('获取坐标请求失败');
-                    }
-                })
-                .then(coordinates => {
-                    //显示图片
-                    coordinates.forEach(coordinate => {
-                        context.strokeStyle = 'red';
-                        context.beginPath();
-                        context.moveTo(coordinate.x1, coordinate.y1);
-                        context.lineTo(coordinate.x2, coordinate.y2);
-                        context.stroke();
-                    });
-                })
-                .catch(error => {
-                    console.error('错误:', error);
-                });
-
-        });
-
-        //点击动作
-        exitButton.addEventListener('click', function () {
-            //显示图片
-
-            //获取img和context
-            const myImg = window.myImg;
-            const context = window.context;
-
-            // 清空画布
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 绘制图片
-            context.drawImage(myImg, 0, 0);
-
-
-            const formData = new FormData();
-            formData.append('car-image', document.getElementById('image-input').files[0]);
-
-            //车辆驶出,获取车牌号和车费
-            fetch('/car_exit', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // 获取后端发送的数据，并将其显示在<p>元素中
-                    var data = `感谢您的光临！ 尊贵的 ${data.carNumber} 的车主。您的车费为: ${data.parkCost} 元!`
-                    dataDisplay.textContent = data;
-                })
-                .catch(error => {
-                    console.error('Failed to fetch data:', error);
-                    dataDisplay.textContent = 'Failed to fetch car number';
-                });
-
-
-            //展示已经停车的车位
-            fetch('/car_exit_Database',{
-                method:'POST',
-                body : formData
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('获取坐标请求失败');
-                    }
-                })
-                .then(coordinates => {
-                    context.strokeStyle = 'brown';
-                    coordinates.forEach(coordinate => {
-                        context.beginPath();
-                        context.moveTo(coordinate.x1, coordinate.y1);
-                        context.lineTo(coordinate.x2, coordinate.y2);
-                        context.stroke();
-                    });
-                })
-                .catch(error => {
-                    console.error('错误:', error);
-                });
-
-        });
-    </script>
 
 </body>
 
