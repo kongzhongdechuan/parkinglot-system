@@ -18,7 +18,7 @@ var Usingpark = require('./getParkUsing');
 
 
 //定义全局变量
-app.locals.car_name = null;
+//app.locals.car_name = null;
 
 
 
@@ -62,12 +62,16 @@ const upload = multer({ storage });
 app.post('/car_enter', upload.single('car-image'), async (req, res) => {
   // 调用getCarNumber.js处理图片
   try {
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    app.locals.car_name = car_number; // 设置全局变量
+    
     console.log("time:", time);
     time = time + 1;
+    console.log("car_enter start -----------------------------------------------------------");
+
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    //app.locals.car_name = car_number; // 设置全局变量
     console.log("/car_enter Car Number:", car_number);
     res.json({ carNumber: car_number});
+    console.log("car_enter end ------------------------------------------------------------");
   } catch (error) {
     console.error('car_enter:'+error);
     res.status(500).json({ error: 'Failed to recognize car number' });
@@ -84,8 +88,12 @@ app.post('/get_coordinates',upload.single('car-image'),async function (req, res)
     //   await new Promise(resolve => setTimeout(resolve, 100)); // 等待100毫秒
     // }
 
+    console.log("time:",time);
+    time = time+1;
+    console.log("get_coordinates start ---------------------------------------------------");
+
     const car_number = await getCarNumberMoudl.getCarNumber();
-    console.log("car_number : ", car_number);
+    console.log("get_coordinates car_number : ", car_number);
     //选择可以选择的车位
     const park = await sql.selectpark();
     console.log("park is :", park);
@@ -93,6 +101,7 @@ app.post('/get_coordinates',upload.single('car-image'),async function (req, res)
     const park_x = park.park_X;
     const park_y = park.park_Y;
 
+    //车位状态信息改变
     sql.updatepark(park_x, park_y, 1);
 
     //(2,0)->(24,27)
@@ -111,10 +120,9 @@ app.post('/get_coordinates',upload.single('car-image'),async function (req, res)
 
     // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
     const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
-    console.log("get_coordinates ", time);
-    time = time + 1;
-
     res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
+
+    console.log("get_coordinates end --------------------------------------------------------");
   }
   catch (error) {
     console.error(error);
@@ -128,15 +136,20 @@ app.post('/get_coordinates',upload.single('car-image'),async function (req, res)
 app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 
   try {
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    app.locals.car_name = car_number; // 设置全局变量
+
     console.log("time:", time);
     time = time + 1;
+    console.log("car_exit start -----------------------------------------------------------");
+
+
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    //app.locals.car_name = car_number; // 设置全局变量
+    
     console.log("/car_exit Car Number:", car_number);
 
-    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
+    //console.log("sql.selectpark :", await sql.selectcarpark(car_number));
     const selectCarparkResult = await sql.selectcarpark(car_number);
-    console.log("selectCarparkResult : ", selectCarparkResult);
+    //console.log("selectCarparkResult : ", selectCarparkResult);
     if (selectCarparkResult) {
       const park_x = selectCarparkResult.park_X;
       const park_y = selectCarparkResult.park_Y;
@@ -151,6 +164,7 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
       // res.status(404).json({ error: '停车场中未找到该车辆' });
     }
 
+    console.log("car_exit end --------------------------------------------------------------------");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to recognize car number' });
@@ -161,21 +175,27 @@ app.post('/car_exit', upload.single('car-image'), async function (req, res) {
 app.post('/car_exit_Database', upload.single('car-image'), async function (req, res) {
 
   try {
-    const car_number = await getCarNumberMoudl.getCarNumber();
-    app.locals.car_name = car_number; // 设置全局变量
+
     console.log("time:", time);
     time = time + 1;
+    console.log("car_exit_Datebase start --------------------------------------------------");
+
+    const car_number = await getCarNumberMoudl.getCarNumber();
+    //app.locals.car_name = car_number; // 设置全局变量
+    
     console.log("/car_exit_Database Car Number:", car_number);
 
-    console.log("sql.selectpark :", await sql.selectcarpark(car_number));
+    //console.log("sql.selectpark :", await sql.selectcarpark(car_number));
     const selectCarparkResult = await sql.selectcarpark(car_number);
-    console.log("selectCarparkResult : ", selectCarparkResult);
+    //console.log("selectCarparkResult : ", selectCarparkResult);
     if (selectCarparkResult) {
       const park_x = selectCarparkResult.park_X;
       const park_y = selectCarparkResult.park_Y;
       const parkTime = selectCarparkResult.enterTime;
       console.log("car_exit  , park_x : ", park_x, " park_y : ", park_y, " parkTime : ", parkTime);
 
+
+      console.log("car_exit_Database 操作SQl语句--------");
       sql.deletecarpark(car_number);
       sql.updatepark(park_x, park_y, 0);
 
@@ -190,6 +210,9 @@ app.post('/car_exit_Database', upload.single('car-image'), async function (req, 
     const transformparkUsing = Usingpark.getParkUsing(parkUsing);
     console.log('执行car_exit_Database')
     res.json(transformparkUsing);
+
+
+    console.log("car_exit_Database end ---------------------------------------------");
 
   } catch (error) {
     console.error(error);
