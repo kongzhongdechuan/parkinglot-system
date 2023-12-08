@@ -86,7 +86,7 @@
         window.onload = function () {
             // 发起 AJAX 请求，从后端获取数据
 
-            show_alreadyParking_Func();
+            //show_alreadyParking_Func();
             
             show_parklot_number();
         };
@@ -121,9 +121,8 @@
 
         // 显示车位数函数
         function show_parklot_number() {
-            return fetch('/get_parkinglot_number', {
+            fetch('/get_parkinglot_number', {
                 method: 'POST',
-                body: formData
             })
                 .then(response => response.json())
                 .then(data => {
@@ -132,7 +131,8 @@
                     p.textContent = `剩余车位数: ${parkinglotNumber}`;
                     ParkNumberDisplay.innerHTML = '';
                     ParkNumberDisplay.appendChild(p);
-                    return formData;
+
+                    console.log('执行get_parkinglot_Number');
                 })
                 .catch(error => {
                     console.error('展示车位数失败:', error);
@@ -140,9 +140,6 @@
                     throw error;
                 });
         }
-
-
-
 
         //车辆进入的一些函数操作——————————————————————————————————————————————————————————————————
         //车辆进入，显示车牌
