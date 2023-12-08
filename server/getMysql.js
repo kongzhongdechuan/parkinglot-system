@@ -54,6 +54,22 @@ async function selectpark(startX,startY) {
     }
 }
 
+//获取现在空车位的车位数
+async function selectpark_number() {
+    try {
+        //使用count(*)直接获取车位数
+        var sql = 'SELECT COUNT(*) as carNum FROM parkinglot WHERE isUsing = 0';
+        const result = await query(sql);
+        console.log('[selectpark_number result] :', result[0].carNum);
+
+        return result[0].carNum;
+    } catch (error) {
+        console.log('[selectpark_number error] - ', error.message);
+        throw error;
+    }
+}
+
+
 async function selectparkUsing() {
     try {
         var sql = 'select * from parkinglot where isUsing = 1';
@@ -118,6 +134,7 @@ async function deletecarpark(carNumber) {
 module.exports = {
     selectcars: selectcars,
     selectpark: selectpark,
+    selectpark_number: selectpark_number,
     selectparkUsing: selectparkUsing,
     updatepark: updatepark,
     selectcarpark: selectcarpark,

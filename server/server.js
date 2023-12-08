@@ -161,7 +161,7 @@ app.post('/get_coordinates', async function (req, res) {
 
 
 
-// 车辆退出，返回车牌和车费
+// 车辆退出，返回车牌和车费-----------------------------------
 app.post('/car_exit', function (req, res) {
   try {
     console.log("time:", time);
@@ -257,6 +257,22 @@ app.post('/car_exit_Database', function (req, res) {
 
 
 
+app.post('/get_parkinglot_number', async function (req, res) {
+  try {
+    console.log("time:", time);
+    time = time + 1;
+    console.log("get_parkinglot_number start -----------------------------------------------------------");
+
+    const parkinglot_number = await sql.selectpark_number(); // 使用 await 等待异步函数的执行完成
+    console.log("/get_parkinglot_number 数目:", parkinglot_number);
+    res.json({ parkinglotNumber: parkinglot_number });
+
+    console.log("get_parkinglot_number end ------------------------------------------------------------");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: '获取parkinglot_number 失败' });
+  }
+});
 
 
 
