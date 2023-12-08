@@ -117,6 +117,10 @@ app.post('/get_coordinates', async function (req, res) {
         const car_number = await getCarNumberMoudl.getCarNumber();
         console.log("get_coordinates car_number : ", car_number);
 
+        //定义起始位置坐标
+        const startX = 12;
+        const startY = 0;
+
         // 选择可以选择的车位
         const park = await sql.selectpark();
         console.log("park is :", park);
@@ -127,9 +131,8 @@ app.post('/get_coordinates', async function (req, res) {
         // 车位状态信息改变
         await sql.updatepark(park_x, park_y, 1);
 
-        // (2,0)->(24,27)
-        const startX = 12;
-        const startY = 0;
+        // (12,0)->(24,27)
+        
         const endX = park_x;
         const endY = park_y;
 
