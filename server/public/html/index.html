@@ -171,8 +171,17 @@
                 }
             })
             .then(coordinates => {
+
+
+                //添加绘制从大门到（12,0）的路径
+                context.strokeStyle = 'red';
+                context.beginPath();
+
+                context.moveTo(10,251);
+                context.lineTo(41.25,251.875);
+                context.stroke();
+
                 coordinates.forEach(coordinate => {
-                    context.strokeStyle = 'red';
                     context.beginPath();
                     context.moveTo(coordinate.x1, coordinate.y1);
                     context.lineTo(coordinate.x2, coordinate.y2);

@@ -122,7 +122,7 @@ app.post('/get_coordinates', async function (req, res) {
         const startY = 0;
 
         // 选择可以选择的车位
-        const park = await sql.selectpark();
+        const park = await sql.selectpark(startX,startY);
         console.log("park is :", park);
 
         const park_x = park.park_X;

@@ -28,12 +28,26 @@ async function selectcars(carNumber) {
 }
 
 // 对 parkinglot 数据库进行操作：查询、修改
-async function selectpark() {
+async function selectpark(startX,startY) {
     try {
         var sql = 'select * from parkinglot where isUsing = 0';
         const result = await query(sql);
         console.log('[selectpark result] :', result[0]);
-        return result[0];
+
+        let nearPark = null;
+        let nearDistance = Infinity;
+        result.forEach(element => {
+            let park_x = element.park_X;
+            let park_y = element.park_Y;
+            let distance = (park_x-startX)*(park_x-startX) + (park_y-startY)*(park_y-startY);
+            if(nearPark === null || distance < nearDistance)
+            {
+                nearPark = element;
+                nearDistance = distance;
+            }
+        });
+
+        return nearPark;
     } catch (error) {
         console.log('[selectpark error] - ', error.message);
         throw error;
