@@ -165,6 +165,38 @@
                 });
         }
 
+
+
+        //展示要去的车位
+
+        function show_willPark_Func(formData) {
+            return fetch('/get_willParkinglot',{
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('获取坐标请求失败');
+                    }
+                })
+                .then(coordinates => {
+                    context.strokeStyle = 'green';
+                    coordinates.forEach(coordinate => {
+                        context.beginPath();
+                        context.moveTo(coordinate.x1, coordinate.y1);
+                        context.lineTo(coordinate.x2, coordinate.y2);
+                        context.stroke();
+                    });
+                    return formData;
+                })
+                .catch(error => {
+                    console.error('错误:', error);
+                    throw error;
+                });
+        }
+
         //展示路径信息
         function get_coordinates_Func(formData) {
             return fetch('/get_coordinates', {
@@ -214,6 +246,7 @@
                     if (parkinglotNumber >= 1) {
                         car_enter_Func(formData)
                             .then(show_alreadyParking_Func)
+                            .then(show_willPark_Func)
                             .then(get_coordinates_Func)
                             .then(show_parklot_number)
                             .catch(error => {

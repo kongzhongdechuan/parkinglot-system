@@ -32,6 +32,9 @@ app.get('/', function (req, res) {
 app.get('/show_alreadyParking', async function (req, res) {
   try {
     const parkUsing = await sql.selectparkUsing();
+
+    console.log('parkUsing:',parkUsing);
+
     const transformparkUsing = Usingpark.getParkUsing(parkUsing);
     res.json(transformparkUsing);
   } catch (error) {
@@ -91,6 +94,42 @@ app.post('/car_enter', async (req, res) => {
   }
 });
 
+//展示要停放的车位
+app.post('/get_willParkinglot', async function (req, res) {
+  try {
+    console.log('time:', time);
+    time = time + 1;
+    console.log("get_willParkinglot start -------------------------------------------------------");
+
+    const startX = 12;
+    const startY = 0;
+    const park = await sql.selectpark(startX, startY);
+    console.log("park is :", park);
+
+    const park_x = park.park_X;
+    const park_y = park.park_Y;
+
+    // 将两个点坐标填入路径，并转换成 JSON 格式
+    const path = [];
+    path.push({ park_X: park_x, park_Y: park_y, isUsing: 1 });
+    path.push({ park_X: park_x + 0.1, park_Y: park_y, isUsing: 1 });
+
+    console.log('path:', path);
+
+    // 将坐标转化为像素格式
+    const transformWillPark = Usingpark.getParkUsing(path);
+
+    console.log('执行 get_WillParkinglot');
+    res.json(transformWillPark);
+
+    console.log("get_willParkinglot end ----------------------------------------------------------");
+  } catch (error) {
+    console.error("get_WillPark error", error);
+    res.status(500).send('get_WillPark Error');
+  }
+});
+
+
 
 
 // 获取坐标路径，传给前端显示
@@ -98,8 +137,8 @@ app.post('/get_coordinates', async function (req, res) {
   try {
 
 
-    console.log('time:',time);
-    time = time+1;
+    console.log('time:', time);
+    time = time + 1;
     console.log("get_coordinate start -------------------------------------------------------");
 
 
@@ -122,7 +161,7 @@ app.post('/get_coordinates', async function (req, res) {
         const startY = 0;
 
         // 选择可以选择的车位
-        const park = await sql.selectpark(startX,startY);
+        const park = await sql.selectpark(startX, startY);
         console.log("park is :", park);
 
         const park_x = park.park_X;
@@ -132,7 +171,7 @@ app.post('/get_coordinates', async function (req, res) {
         await sql.updatepark(park_x, park_y, 1);
 
         // (12,0)->(24,27)
-        
+
         const endX = park_x;
         const endY = park_y;
 
@@ -235,7 +274,7 @@ app.post('/car_exit_Database', function (req, res) {
         }
 
         console.log('car_exit_Database : 车位占用情况');
-        
+
         // 返回车位占用情况
         const parkUsing = await sql.selectparkUsing();
         const transformparkUsing = Usingpark.getParkUsing(parkUsing);
