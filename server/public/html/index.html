@@ -86,56 +86,31 @@
         window.onload = function () {
             // 发起 AJAX 请求，从后端获取数据
 
-            //show_alreadyParking_Func();
-            
+            show_alreadyParking_Func();
+
             show_parklot_number();
         };
 
 
         //车辆初始化操作
-        function show_alreadyParking_Func() {
-            fetch('/show_alreadyParking', {
-                method: 'GET'
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('获取坐标请求失败');
-                    }
-                })
-                .then(coordinates => {
-                    context.strokeStyle = 'brown';
-                    coordinates.forEach(coordinate => {
-                        context.beginPath();
-                        context.moveTo(coordinate.x1, coordinate.y1);
-                        context.lineTo(coordinate.x2, coordinate.y2);
-                        context.stroke();
-                    });
-                })
-                .catch(error => {
-                    console.error('错误:', error);
-                });
-        }
-
-
-        // 显示车位数函数
         function show_parklot_number() {
-            fetch('/get_parkinglot_number', {
+            return fetch('/get_parkinglot_number', {
                 method: 'POST',
             })
                 .then(response => response.json())
                 .then(data => {
-                    var parkinglotNumber = data.parkinglotNumber; // 修正拼写错误
+                    var parkinglotNumber = data.parkinglotNumber;
                     var p = document.createElement('p');
                     p.textContent = `剩余车位数: ${parkinglotNumber}`;
+
                     ParkNumberDisplay.innerHTML = '';
                     ParkNumberDisplay.appendChild(p);
-
                     console.log('执行get_parkinglot_Number');
+                    return parkinglotNumber;
                 })
                 .catch(error => {
                     console.error('展示车位数失败:', error);
+
                     ParkNumberDisplay.textContent = '展示车位失败';
                     throw error;
                 });
@@ -226,6 +201,39 @@
                     throw error;
                 });
         }
+
+
+
+
+        //车辆进入的总函数，先看是否还有车位，之后再根据车位数进行操作
+        function ParkingNumber_CarEnter(formData) {
+            show_parklot_number()
+                .then(parkinglotNumber => {
+                    console.log('车位数:', parkinglotNumber);
+
+                    if (parkinglotNumber >= 1) {
+                        car_enter_Func(formData)
+                            .then(show_alreadyParking_Func)
+                            .then(get_coordinates_Func)
+                            .then(show_parklot_number)
+                            .catch(error => {
+                                console.error('处理错误:', error);
+                            });
+                    } else {
+                        var dataMsg = '尊敬的车主，很抱歉已经没有车位！';
+                        // 假设 dataDisplay 在你的 HTML 中有定义
+                        dataDisplay.textContent = dataMsg;
+                        show_alreadyParking_Func();
+                    }
+                })
+                .catch(error => {
+                    console.error('获取车位数失败:', error);
+                });
+        }
+
+
+
+
 
 
 
@@ -323,12 +331,8 @@
             context.drawImage(myImg, 0, 0);
 
 
-            car_enter_Func(formData)
-                .then(show_alreadyParking_Func)
-                .then(get_coordinates_Func)
-                .catch(error => {
-                    console.error('处理错误:', error);
-                });
+            ParkingNumber_CarEnter(formData);
+
 
 
         });
@@ -351,8 +355,11 @@
             const formData = new FormData();
             formData.append('car-image', document.getElementById('image-input').files[0]);
 
+
+            //车辆驶出功能
             car_exit_Func(formData)
                 .then(show_exitParking_Func)
+                .then(show_parklot_number)
                 .catch(error => {
                     console.error('处理错误:', error);
                 });
