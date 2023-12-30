@@ -6,7 +6,7 @@ const https = require('https')
 const imageFilePath = path.join(__dirname, '/public/images', 'car.jpg');
 
 const requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
-const accessToken = '24.94a4dfbc331c8067fc7546781e2968d6.2592000.1704029051.282335-44120544';
+const accessToken = '24.0da67b4a738e12423c2241ce6acd38da.2592000.1705495843.282335-41606987';
 
 async function getCarNumber() {
   try {
