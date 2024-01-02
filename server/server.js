@@ -377,6 +377,26 @@ app.post('/random_init', async function (req, res) {
 
 
 
+app.post('/autoEnter', async function (req, res) {
+  try {
+      console.log("time:", time);
+      time = time + 1;
+      console.log("random_init start -----------------------------------------------------------");
+
+      // 先进行满初始化操作，之后，随机进行删除操作
+      await sql.setFullParkinglot();
+      await sql.randomRemoveParkinglot();
+
+      console.log("random_init end ------------------------------------------------------------");
+      res.status(200).json({ success: 'random_init 成功' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'random_init 失败' });
+  }
+});
+
+
+
 
 var server = app.listen(8888, function () {
 

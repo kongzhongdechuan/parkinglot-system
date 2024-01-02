@@ -382,6 +382,17 @@
             }
         }
 
+        async function autoEnter_Func() {
+            try {
+                await fetch('/autoEnter', {
+                    method: 'POST',
+                });
+            } catch (error) {
+                console.error('Failed to use func:', error);
+                throw error;
+            }
+        }
+
 
     </script>
 
@@ -497,6 +508,32 @@
             try {
                 await randomInit_Func();
                 location.reload();
+            } catch (error) {
+                console.error('Failed to use func:', error);
+            }
+        });
+
+
+        /*
+         * 自动测试
+         * 1.实现单次测试功能
+         * 2.在后端定义一个全局变量，index
+         * 3.通过index变量获取车牌信息
+         * 4.上面是找到对应的车牌
+         * 
+         * 5. 每次调用一下车辆进入的功能
+         */
+        autoEnterButton.addEventListener('click', async function () {
+            try {
+                for (let i = 0; i < 20; i++) {
+
+                    await autoEnter_Func();
+
+                    // 模拟点击 enterButton 按钮
+                    enterButton.click();
+                    // 添加适当的延时，以便模拟按钮点击的间隔
+                    await sleep(1500); // 500ms 延时
+                }
             } catch (error) {
                 console.error('Failed to use func:', error);
             }
