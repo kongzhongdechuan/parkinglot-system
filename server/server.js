@@ -361,6 +361,7 @@ app.post('/random_init', async function (req, res) {
 
     //先进行满初始化操作，之后，随机进行删除操作
     await sql.setFullParkinglot();
+    await sql.randomRemoveParkinglot();
 
 
     console.log("random_init end ------------------------------------------------------------");

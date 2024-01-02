@@ -329,7 +329,7 @@
 
 
         //测试的方法--------------------------------------------------------------
-        function zeroInit_Func() {
+        async function zeroInit_Func() {
             return fetch('/zero_init', {
                 method: 'POST',
             })
@@ -451,20 +451,20 @@
         const fullButton = document.getElementById('full-button');
         const autoEnterButton = document.getElementById('autoEnter-button');
 
-        zeroButton.addEventListener('click', function () {
+        zeroButton.addEventListener('click',function () {
             zeroInit_Func();
             location.reload();
             
         });
 
-        fullButton.addEventListener('click', function () {
+        fullButton.addEventListener('click',function () {
             fullInit_Func();
             location.reload();
         });
  
-        randomButton.addEventListener('click', function () {
+        randomButton.addEventListener('click',function () {
             randomInit_Func();
-            location.reload();
+            //location.reload();
         });
 
 
