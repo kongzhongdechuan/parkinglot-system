@@ -330,6 +330,7 @@ app.post('/zero_init', async function (req, res) {
 
 
     console.log("zero_init end ------------------------------------------------------------");
+    res.status(200).json({ success: 'zero_init 成功' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'zero_init 失败' });
@@ -342,32 +343,35 @@ app.post('/full_init', async function (req, res) {
     time = time + 1;
     console.log("full_init start -----------------------------------------------------------");
 
+    // 先进行满初始化操作，之后，随机进行删除操作
     await sql.setFullParkinglot();
 
-
     console.log("full_init end ------------------------------------------------------------");
-  } catch (error) {
+    res.status(200).json({ success: 'full_init 成功' });
+} catch (error) {
     console.error(error);
     res.status(500).json({ error: 'full_init 失败' });
-  }
+}
 });
+
+
 
 
 app.post('/random_init', async function (req, res) {
   try {
-    console.log("time:", time);
-    time = time + 1;
-    console.log("random_init start -----------------------------------------------------------");
+      console.log("time:", time);
+      time = time + 1;
+      console.log("random_init start -----------------------------------------------------------");
 
-    //先进行满初始化操作，之后，随机进行删除操作
-    await sql.setFullParkinglot();
-    await sql.randomRemoveParkinglot();
+      // 先进行满初始化操作，之后，随机进行删除操作
+      await sql.setFullParkinglot();
+      await sql.randomRemoveParkinglot();
 
-
-    console.log("random_init end ------------------------------------------------------------");
+      console.log("random_init end ------------------------------------------------------------");
+      res.status(200).json({ success: 'random_init 成功' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'random_init 失败' });
+      console.error(error);
+      res.status(500).json({ error: 'random_init 失败' });
   }
 });
 

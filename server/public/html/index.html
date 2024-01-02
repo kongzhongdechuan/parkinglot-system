@@ -79,7 +79,7 @@
                 <button id="full-button" style="height: 25px;width: 200px;">满车位</button><br>
                 <button id="autoEnter-button" style="height: 25px;width: 200px;">自动测试</button><br>
             </div>
-            
+
 
             <button id="enter-button" style="height: 50px;width: 200px;">车辆进入</button><br>
             <div style="height: 40px;"></div>
@@ -179,7 +179,7 @@
         //展示要去的车位
 
         function show_willPark_Func(formData) {
-            return fetch('/get_willParkinglot',{
+            return fetch('/get_willParkinglot', {
                 method: 'POST',
                 body: formData
             })
@@ -330,33 +330,36 @@
 
         //测试的方法--------------------------------------------------------------
         async function zeroInit_Func() {
-            return fetch('/zero_init', {
-                method: 'POST',
-            })
-                .catch(error => {
-                    console.error('Failed to use func:', error);
-                    throw error;
+            try {
+                fetch('/zero_init', {
+                    method: 'POST',
                 });
+            } catch (error) {
+                console.error('Failed to use func:', error);
+                throw error;
+            }
         }
 
-        function fullInit_Func() {
-            return fetch('/full_init', {
-                method: 'POST',
-            })
-                .catch(error => {
-                    console.error('Failed to use func:', error);
-                    throw error;
+        async function fullInit_Func() {
+            try {
+                fetch('/full_init', {
+                    method: 'POST',
                 });
+            } catch (error) {
+                console.error('Failed to use func:', error);
+                throw error;
+            }
         }
 
-        function randomInit_Func() {
-            return fetch('/random_init', {
-                method: 'POST',
-            })
-                .catch(error => {
-                    console.error('Failed to use func:', error);
-                    throw error;
+        async function randomInit_Func() {
+            try {
+                await fetch('/random_init', {
+                    method: 'POST',
                 });
+            } catch (error) {
+                console.error('Failed to use func:', error);
+                throw error;
+            }
         }
 
 
@@ -451,20 +454,32 @@
         const fullButton = document.getElementById('full-button');
         const autoEnterButton = document.getElementById('autoEnter-button');
 
-        zeroButton.addEventListener('click',function () {
-            zeroInit_Func();
-            location.reload();
-            
+        zeroButton.addEventListener('click',async function () {
+            try {
+                await zeroInit_Func();
+                location.reload();
+            } catch (error) {
+                console.error('Failed to use func:', error);
+            }
+
         });
 
-        fullButton.addEventListener('click',function () {
-            fullInit_Func();
-            location.reload();
+        fullButton.addEventListener('click',async function () {
+            try {
+                await fullInit_Func();
+                location.reload();
+            } catch (error) {
+                console.error('Failed to use func:', error);
+            }
         });
- 
-        randomButton.addEventListener('click',function () {
-            randomInit_Func();
-            //location.reload();
+
+        randomButton.addEventListener('click', async function () {
+            try {
+                await randomInit_Func();
+                location.reload();
+            } catch (error) {
+                console.error('Failed to use func:', error);
+            }
         });
 
 
