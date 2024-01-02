@@ -6,7 +6,8 @@ var connection = mysql.createConnection({
     user: 'root',
     password: 'maoyangyang12345',
     port: 3306,
-    database: 'parkingsystem'
+    //database: 'parkingsystemsave'   //一般车位情况
+     database: 'parkingsystem'      //只剩最后一个车位情况
 });
 
 connection.connect();
@@ -131,6 +132,65 @@ async function deletecarpark(carNumber) {
     }
 }
 
+/*
+ * 这是测试用sql语句
+ * 当清空的时候使用clearCarpark()和clearParkinglot()进行清空
+ * 当设置满数据库的时候仅仅设置parkinglot()，实际上没有停车
+ */
+
+async function clearCarpark() {
+    try {
+        var sql = 'delete from carpark';
+        const result = await query(sql);
+        console.log('clearCarpark : ', result);
+    } catch (error) {
+        console.log('[clearCarpark error] - ', error.message);
+        throw error;
+    }
+}
+
+async function clearParkinglot() {
+    try {
+        var sql = 'update parkinglot set isUsing = 0';
+        const result = await query(sql);
+        console.log('clearParkinglot : ', result);
+    } catch (error) {
+        console.log('[clearParkinglot error] - ', error.message);
+        throw error;
+    }
+}
+
+async function setFullParkinglot() {
+    try {
+        var sql = 'update parkinglot set isUsing = 1';
+        const result = await query(sql);
+        console.log('setFullParkinglot : ', result);
+    } catch (error) {
+        console.log('[setFullParkinglot error] - ', error.message);
+        throw error;
+    }
+}
+
+//随机产生坐标，进行删除操作,删除30个车位信息
+
+async function randomRemoveParkinglot() {
+    try {
+
+        for(let i = 0; i < 20; i++)
+        {
+            var sql = 'update parkinglot set isUsing = 1';
+            const result = await query(sql);
+            console.log('setFullParkinglot : ', result);
+        }
+
+    } catch (error) {
+        console.log('[setFullParkinglot error] - ', error.message);
+        throw error;
+    }
+}
+
+
+
 module.exports = {
     selectcars: selectcars,
     selectpark: selectpark,
@@ -139,5 +199,8 @@ module.exports = {
     updatepark: updatepark,
     selectcarpark: selectcarpark,
     deletecarpark: deletecarpark,
-    insertcarpark: insertcarpark
+    insertcarpark: insertcarpark,
+    clearCarpark: clearCarpark,
+    clearParkinglot: clearParkinglot,
+    setFullParkinglot: setFullParkinglot
 };

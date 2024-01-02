@@ -31,12 +31,16 @@ app.get('/', function (req, res) {
 //车辆进入的时候展示车位信息
 app.get('/show_alreadyParking', async function (req, res) {
   try {
+    console.log("show_alreadyParking start -----------------------------------------------------------");
+
     const parkUsing = await sql.selectparkUsing();
 
     console.log('parkUsing:',parkUsing);
 
     const transformparkUsing = Usingpark.getParkUsing(parkUsing);
     res.json(transformparkUsing);
+    console.log("show_alreadyParking end -----------------------------------------------------------");
+
   } catch (error) {
     console.error(error);
     res.status(500).send('show_alreadyParking Server Error');
@@ -313,6 +317,58 @@ app.post('/get_parkinglot_number', async function (req, res) {
   }
 });
 
+
+//测试方便的代码 -----------------------------------------------------------------------------------
+app.post('/zero_init', async function (req, res) {
+  try {
+    console.log("time:", time);
+    time = time + 1;
+    console.log("zero_init start -----------------------------------------------------------");
+
+    await sql.clearCarpark(); // 使用 await 等待异步函数的执行完成
+    await sql.clearParkinglot();
+
+
+    console.log("zero_init end ------------------------------------------------------------");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'zero_init 失败' });
+  }
+});
+
+app.post('/full_init', async function (req, res) {
+  try {
+    console.log("time:", time);
+    time = time + 1;
+    console.log("full_init start -----------------------------------------------------------");
+
+    await sql.setFullParkinglot();
+
+
+    console.log("full_init end ------------------------------------------------------------");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'full_init 失败' });
+  }
+});
+
+
+app.post('/random_init', async function (req, res) {
+  try {
+    console.log("time:", time);
+    time = time + 1;
+    console.log("random_init start -----------------------------------------------------------");
+
+    //先进行满初始化操作，之后，随机进行删除操作
+    await sql.setFullParkinglot();
+
+
+    console.log("random_init end ------------------------------------------------------------");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'random_init 失败' });
+  }
+});
 
 
 
