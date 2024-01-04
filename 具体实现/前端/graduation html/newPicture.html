@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>车位检测系统</title>
+</head>
+
+<body>
+
+    <div id="container" style="width: 1370px;">
+        <div id="header" style="background-color:#80f7f3;">
+            <h1 style="margin-bottom:0;text-align: center;">车位检测系统</h1>
+        </div>
+
+        <div id="content" style="background-color:#97dbee;height:600px;width:1100px;float:left;">
+            <div style="background-color: #5f818b;height: 80px;overflow: hidden;">
+                <!--在style中加入overflow：hidden,否则会移动div-->
+                <h2> 信息显示区域</h2>
+            </div>
+
+            <div style="height: 520px;">
+                <!--<img id="parking-lot" src="D:\\桌面\\小毕设\\具体实现\\前端\\image\\parking.jpg">-->
+                <canvas id="drawing-canvas" width="1100px" height="520px" background-color="#FF0000">
+                    浏览器不支持HTML5 canvas 标签
+                </canvas>
+                <script>
+
+                    const myImg = new Image();
+                    myImg.src = 'D:/桌面/小毕设/具体实现/前端/image/parking.jpg';
+
+                    var canvas = document.getElementById('drawing-canvas');
+                    var context = canvas.getContext('2d');
+                    context.strokeStyle = 'red';
+                    context.lineWidth = 7;
+                    //var img = document.getElementById("parking-lot");
+                    myImg.onload = function () {
+                        console.log(this);
+                        context.drawImage(this, 0, 0);
+                        // context.moveTo(10, 260);
+                        // context.lineTo(1000, 260);
+                        // context.stroke();
+                    }
+
+
+
+                </script>
+
+
+
+            </div>
+        </div>
+
+
+        <div id="menu" style="background-color:#5afaba;text-align:center;height:600px;width:270px;float:left;">
+            <div style="height: 40px;">
+                <div style="height: 10px;"></div>
+                <b>菜单</b>
+            </div>
+            <div style="height: 380px;">
+                <input type="file" id="image-input" accept="image/*"><br>
+                <!--图片的默认大小为高度为:195像素,宽度为:260像素。使用之前先用python修改一下-->
+                <img id="image-preview" src="">
+            </div>
+            <button id="enter-button" style="height: 50px;width: 200px;">车辆进入</button><br>
+            <div style="height: 40px;"></div>
+            <button id="exit-button" style="height: 50px;width: 200px;">车辆驶出</button><br>
+        </div>
+
+
+    </div>
+
+
+    <script>
+        // 获取页面元素
+        const imageInput = document.getElementById('image-input');
+        const processImageBtn = document.getElementById('process-image');
+        const imagePreview = document.getElementById('image-preview');
+        const outputImage = document.getElementById('output-image');
+
+        // 监听图片上传事件
+        imageInput.addEventListener('change', function () {
+            const file = imageInput.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                imagePreview.src = imageUrl;
+            }
+        });
+
+
+        function changex(x) {
+            return (x + 1.5) * (1100 / 40);
+        }
+        function changey(y) {
+            return (y + 1.5) * (520 / 32);
+        }
+
+
+        //存储坐标的数组
+        var coordinates = [];
+        // 读取文件中的坐标数据
+        function readCoordinatesFromFile() {
+            fetch('D:/桌面/小毕设/具体实现/前端/data/datas.txt') // 读取文件
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    lines.forEach(line => {
+                        const [x, y] = line.trim().split(' ');
+                        coordinates.push({ x: changex(Number(x)), y: changey(Number(y)});
+                    });
+                })
+                .catch(error => console.error('无法读取文件:', error));
+        }
+        // 显示坐标数据
+        function displayCoordinates() {
+            const coordinatesDisplay = document.getElementById('coordinates-display');
+            coordinatesDisplay.innerHTML = "坐标数据：<br>";
+            coordinates.forEach((coord, index) => {
+                coordinatesDisplay.innerHTML += `X${index + 1}: ${coord.x}, Y${index + 1}: ${coord.y}<br>`;
+            });
+        }
+
+
+        
+        const enterButton = document.getElementById('enter-button');
+        enterButton.addEventListener('click', function () {
+            //alert('车辆进入被点击！');
+
+            const myImg = new Image();
+            myImg.src = 'D:/桌面/小毕设/具体实现/前端/image/parking.jpg';
+
+            var canvas = document.getElementById('drawing-canvas');
+            var context = canvas.getContext('2d');
+            context.strokeStyle = 'red';
+            context.lineWidth = 7;
+
+
+
+
+            myImg.onload = function () {
+                console.log(this);
+                context.drawImage(this, 0, 0);
+
+                // context.moveTo(changex(x1), changey(y1));
+                // context.lineTo(changex(x2), changey(y2));
+
+                readCoordinatesFromFile();
+                displayCoordinates();
+
+                var startx, starty;
+                var endx, endy;
+                for (let i = 0; i < coordinates.length - 1; i += 2) {
+                    startx = coordinates[i].x;
+                    starty = coordinates[i].y;
+
+                    endx = coordinates[i + 1].x;
+                    endy = coordinates[i + 1].y;
+
+                    context.moveTo(startx, starty);
+                    context.lineTo(end, endy);
+                }
+
+
+                context.stroke();
+
+            }
+        });
+
+
+        const exitButton = document.getElementById("exit-button");
+        exitButton.addEventListener('click', function () {
+            alert('车辆驶出被点击！');
+        });
+
+    </script>
+
+</body>

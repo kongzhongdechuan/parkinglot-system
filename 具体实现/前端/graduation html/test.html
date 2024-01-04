@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坐标数据展示</title>
+</head>
+
+<body>
+    <div>
+        <script>
+            // 存储坐标的数组
+            var coordinates = [];
+
+            // 读取文件中的坐标数据
+            function readCoordinatesFromFile() {
+                fetch('datas.txt') // 使用相对路径，确保文件位于与HTML文件相同的目录下
+                    .then(response => response.text())
+                    .then(data => {
+                        coordinates = []; // 清空之前的坐标数据
+                        const lines = data.split('\n');
+                        lines.forEach(line => {
+                            const [x, y] = line.trim().split(' ');
+                            coordinates.push({x,y});
+                        });
+                        displayCoordinates(); // 调用函数显示坐标数据
+                        alert('坐标数据已成功读取。');
+                    })
+                    .catch(error => console.error('无法读取文件:', error));
+            }
+
+            // 显示坐标数据
+            function displayCoordinates() {
+                const coordinatesDisplay = document.getElementById('coordinates-display');
+                coordinatesDisplay.innerHTML = "坐标数据：<br>";
+                coordinates.forEach((coord, index) => {
+                    coordinatesDisplay.innerHTML += `X${index + 1}: ${coord.x}, Y${index + 1}: ${coord.y}<br>`;
+                });
+            }
+
+            // 添加一个示例的坐标转换函数 changex 和 changey
+            function changex(x) {
+                return x * 2; // 这里示例性地将X坐标乘以2
+            }
+
+            function changey(y) {
+                return y * 2; // 这里示例性地将Y坐标乘以2
+            }
+        </script>
+
+        <button onclick="readCoordinatesFromFile()">读取坐标数据</button>
+        <div id="coordinates-display"></div>
+    </div>
+</body>
+
+</html>

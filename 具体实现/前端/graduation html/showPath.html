@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+      async
+      defer
+    ></script>
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 12,
+          center: { lat: 37.7749, lng: -122.4194 }, // 设置地图中心点
+        });
+
+        // 定义路径数据，示例中包含三个坐标点
+        var pathData = [
+          { lat: 37.7749, lng: -122.4194 },
+          { lat: 37.8049, lng: -122.465 },
+          { lat: 37.7749, lng: -122.5194 },
+        ];
+
+        // 创建路径对象
+        var path = new google.maps.Polyline({
+          path: pathData,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        });
+
+        // 将路径添加到地图
+        path.setMap(map);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+  </body>
+</html>
