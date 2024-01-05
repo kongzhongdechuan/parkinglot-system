@@ -173,16 +173,16 @@ async function setFullParkinglot() {
 //随机产生坐标，进行删除操作,删除30个车位信息
 
 
-const sqlArray = [[{ park_X: 0, park_Y: 6 }, { park_X: 0, park_Y: 14 },{park_X: 0,park_Y: 26}], 
-                    [{ park_X: 3, park_Y: 0 }, { park_X: 3, park_Y: 17 }],   
-                    [{ park_X: 5, park_Y: 4 }, { park_X: 5, park_Y: 30 }],
-                    [{ park_X: 8, park_Y: 10 }, { park_X: 8, park_Y: 25 }],
-                    [{ park_X: 10, park_Y: 5 }, { park_X: 10, park_Y: 21 }],
-                    [{ park_X: 13, park_Y: 2 }, { park_X: 13, park_Y: 29 }],
+const sqlArray = [[{park_X: 0,park_Y: 26}], 
+                    [{ park_X: 3, park_Y: 17 }],   
+                    [{ park_X: 5, park_Y: 4 }],
+                    [{ park_X: 8, park_Y: 10 }],
+                    [{ park_X: 10, park_Y: 21 }],
+                    [ { park_X: 13, park_Y: 29 }],
                     [{ park_X: 15, park_Y: 14 }],
-                    [{ park_X: 18, park_Y: 8 }, { park_X: 18, park_Y: 18 }],
-                    [{ park_X: 20, park_Y: 13 }, { park_X: 20, park_Y: 24 }],
-                    [{ park_X: 23, park_Y: 13 }, { park_X: 23, park_Y: 28 }]
+                    [{ park_X: 18, park_Y: 8 }],
+                    [{ park_X: 20, park_Y: 13 }],
+                    [{ park_X: 23, park_Y: 28 }]
 
 ];
 

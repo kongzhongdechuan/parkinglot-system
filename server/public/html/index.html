@@ -18,6 +18,13 @@
                 <!--在style中加入overflow：hidden,否则会移动div-->
                 <!--<h2> 信息显示区域</h2>-->
                 <div style="width: 800px;float: left;">
+                    <p>
+
+                    </p>
+                    <!--没有该车辆！-->
+                    <!-- 未检测到车牌，请您重新移动车辆至摄像头处！ -->
+                    <!-- 停车场没有该车辆！ -->
+                    <!-- 停车场没有车辆！ -->
                     <p id="data_display_area"></p>
                 </div>
 
@@ -136,7 +143,11 @@
                 .then(data => {
                     var carNumber = data.carNumber;
                     var p = document.createElement('p');
-                    p.textContent = `欢迎您！ 尊贵的 ${carNumber} 的车主。我已为您规划好车位，车位路线如下！`;
+                    if (carNumber != '京A88888')
+                        p.textContent = `欢迎您！ 尊贵的 ${carNumber} 的车主。我已为您规划好车位，车位路线如下！`;
+                    else {
+                        p.textContent = `没有识别到车牌，请你移动车辆，使摄像头对准车牌！`;
+                    }
                     dataDisplay.innerHTML = '';
                     dataDisplay.appendChild(p);
                     return formData;
@@ -231,7 +242,7 @@
                     async function drawWithDelay() {
                         for (const coordinate of coordinates) {
                             await drawCoordinate(coordinate);
-                            await sleep(50); // 200ms 延时
+                            await sleep(25); // 200ms 延时
                         }
                     }
 
@@ -273,6 +284,9 @@
                     console.log('车位数:', parkinglotNumber);
 
                     if (parkinglotNumber >= 1) {
+
+                        var error = car_enter_Func(formData);
+
                         car_enter_Func(formData)
                             .then(show_alreadyParking_Func)
                             .then(show_willPark_Func)
@@ -281,6 +295,8 @@
                             .catch(error => {
                                 console.error('处理错误:', error);
                             });
+
+
                     } else {
                         var dataMsg = '尊敬的车主，很抱歉已经没有车位！';
                         // 假设 dataDisplay 在你的 HTML 中有定义
@@ -525,15 +541,16 @@
          */
         autoEnterButton.addEventListener('click', async function () {
             try {
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < 11; i++) {
 
                     await autoEnter_Func();
 
                     // 模拟点击 enterButton 按钮
-                    enterButton.click();
-                    // 添加适当的延时，以便模拟按钮点击的间隔
-                    await sleep(1500); // 500ms 延时
+                    await enterButton.click();
+
+                    await sleep(1888);
                 }
+                location.reload();
             } catch (error) {
                 console.error('Failed to use func:', error);
             }

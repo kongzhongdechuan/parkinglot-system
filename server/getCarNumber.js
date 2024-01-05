@@ -6,7 +6,7 @@ const https = require('https')
 const imageFilePath = path.join(__dirname, '/public/images', 'car.jpg');
 
 const requestUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
-const accessToken = '24.0da67b4a738e12423c2241ce6acd38da.2592000.1705495843.282335-41606987';
+const accessToken = '24.cde825ed569526815c6195295b31aefb.2592000.1707045090.282335-46469355';
 
 async function getCarNumber() {
   try {
@@ -40,6 +40,7 @@ async function getCarNumber() {
       return json_data.words_result.number;
     } else {
       throw new Error('Car number not found');
+      //return '京A88888';
     }
   } catch (error) {
     throw error;

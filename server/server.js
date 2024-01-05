@@ -161,11 +161,11 @@ app.post('/get_coordinates', async function (req, res) {
         console.log("get_coordinates car_number : ", car_number);
 
         //定义起始位置坐标
-        const startX = 12;
-        const startY = 0;
+        const start_X = 11.3;
+        const start_Y = 0;
 
         // 选择可以选择的车位
-        const park = await sql.selectpark(startX, startY);
+        const park = await sql.selectpark(start_X, start_Y);
         console.log("park is :", park);
 
         const park_x = park.park_X;
@@ -184,6 +184,8 @@ app.post('/get_coordinates', async function (req, res) {
         // 对carpark进行添加
         await sql.insertcarpark(car_number, endX, endY);
 
+        const startX = 12;
+        const startY = 0;
         // 模拟坐标数组（您应根据实际需求提供真实的坐标数组）
         const coordinates = getArrayMoudle.getCoordinates(startX, startY, endX, endY);
         res.json(coordinates); // 将坐标数组作为JSON响应发送给前端
@@ -377,21 +379,36 @@ app.post('/random_init', async function (req, res) {
 
 
 
+
+//定义变量index用于识别是哪个车牌
+
+var index = 0;
+
 app.post('/autoEnter', async function (req, res) {
   try {
       console.log("time:", time);
       time = time + 1;
-      console.log("random_init start -----------------------------------------------------------");
+      console.log("autoEnter start -----------------------------------------------------------");
 
-      // 先进行满初始化操作，之后，随机进行删除操作
-      await sql.setFullParkinglot();
-      await sql.randomRemoveParkinglot();
+      //进行      
+      index++;
+      console.log("The index is : ",index);
 
-      console.log("random_init end ------------------------------------------------------------");
-      res.status(200).json({ success: 'random_init 成功' });
+      //将test_images中编号为 “index.jpg”的文件拷贝到images,并覆盖images下的car.jpg和修改为car.jpg
+
+      // 构建文件路径
+      const sourceFilePath = path.join(__dirname, '/public/test_images', `${index}.jpg`);
+      const destinationFilePath = path.join(__dirname, '/public/images', 'car.jpg');
+
+      // 使用 fs 复制文件并覆盖目标文件
+      fs.copyFileSync(sourceFilePath, destinationFilePath);
+
+
+      console.log("autoEnter end ------------------------------------------------------------");
+      res.status(200).json({ success: 'autoEnter 成功' });
   } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'random_init 失败' });
+      res.status(500).json({ error: 'autoEnter 失败' });
   }
 });
 
